@@ -255,7 +255,14 @@
         <p>The app isn't code-signed yet, so macOS quarantines it. After dragging <b>Sonora</b> into <b>Applications</b>, run this in <b>Terminal</b> so it opens:</p>
         <pre><code>xattr -dr com.apple.quarantine /Applications/Sonora.app</code><button class="copy" onclick="navigator.clipboard.writeText('xattr -dr com.apple.quarantine /Applications/Sonora.app');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</button></pre>
         <p class="small">Alternatively: right-click the app → <b>Open</b> → <b>Open</b>. On <b>Windows</b>, if SmartScreen appears: <b>More info</b> → <b>Run anyway</b>.</p>
-        <p class="small">On <b>Linux</b>, the <code>.deb</code> adds <b>Sonora</b> to your applications menu (<code>sudo apt install ./Sonora-linux-amd64.deb</code>). The <code>.AppImage</code> is portable — <code>chmod +x</code> and run it. Requires x86_64 and glibc ≥ 2.35. See the <a href="https://github.com/lordmacu/sonora#-downloads">README</a> for every platform.</p>
+
+        <h3 style="margin-top:28px;"><img src="https://cdn.simpleicons.org/linux/ffffff" alt="" style="width:20px;height:20px;vertical-align:-3px;margin-right:8px;" />Installing on Linux</h3>
+        <p><b>.deb (Debian/Ubuntu)</b> — installs Sonora and adds it to your applications menu:</p>
+        <pre><code>sudo apt install ./Sonora-linux-amd64.deb</code><button class="copy" onclick="navigator.clipboard.writeText('sudo apt install ./Sonora-linux-amd64.deb');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</button></pre>
+        <p class="small">Then launch <b>Sonora</b> from the menu. Uninstall with <code>sudo apt remove sonora</code>.</p>
+        <p><b>.AppImage</b> — portable, any distro, no install:</p>
+        <pre><code>chmod +x Sonora-linux-x86_64.AppImage &amp;&amp; ./Sonora-linux-x86_64.AppImage</code><button class="copy" onclick="navigator.clipboard.writeText('chmod +x Sonora-linux-x86_64.AppImage && ./Sonora-linux-x86_64.AppImage');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</button></pre>
+        <p class="small">Requires x86_64 and glibc ≥ 2.35 (Ubuntu 22.04+ / Debian 12+ / Fedora 36+…). To show the AppImage in the menu too, use <a href="https://github.com/TheAssassin/AppImageLauncher">AppImageLauncher</a>. See the <a href="https://github.com/lordmacu/sonora#-downloads">README</a> for every platform.</p>
       </div>
     </section>
 
