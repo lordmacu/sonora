@@ -176,6 +176,21 @@ class AppState extends ChangeNotifier {
     return songs.isEmpty ? null : songs.first;
   }
 
+  /// Hasta [max] carátulas (local o remota) de las primeras canciones con
+  /// imagen, para armar el cover en mosaico de la playlist.
+  List<({String? localPath, String? url})> coverImagesOf(String playlistId,
+      {int max = 4}) {
+    final out = <({String? localPath, String? url})>[];
+    for (final s in songsOfPlaylist(playlistId)) {
+      final hasLocal = (s.thumbnailPath ?? '').isNotEmpty;
+      final hasUrl = (s.thumbnailUrl ?? '').isNotEmpty;
+      if (!hasLocal && !hasUrl) continue;
+      out.add((localPath: s.thumbnailPath, url: s.thumbnailUrl));
+      if (out.length >= max) break;
+    }
+    return out;
+  }
+
   /// Conteo de canciones REALMENTE mostrables (descargadas o con metadatos),
   /// no los videoIds crudos: evita contar ids huérfanos que ya no se ven.
   int resolvedCountOf(String playlistId) => songsOfPlaylist(playlistId).length;

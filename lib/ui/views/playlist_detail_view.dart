@@ -31,8 +31,7 @@ class PlaylistDetailView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               PlaylistCover(
-                localPath: songs.isEmpty ? null : songs.first.thumbnailPath,
-                url: songs.isEmpty ? null : songs.first.thumbnailUrl,
+                images: app.coverImagesOf(id),
                 fallbackIcon:
                     pl.id == Playlist.favoritesId ? Icons.favorite : Icons.queue_music,
                 width: 120,

@@ -103,7 +103,6 @@ class _PlaylistCardState extends State<_PlaylistCard> {
         : pl.id == Playlist.generalId
             ? Icons.queue_music
             : Icons.playlist_play;
-    final cover = app.firstSongOf(pl.id);
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hover = true),
@@ -123,8 +122,7 @@ class _PlaylistCardState extends State<_PlaylistCard> {
               Stack(
                 children: [
                   PlaylistCover(
-                    localPath: cover?.thumbnailPath,
-                    url: cover?.thumbnailUrl,
+                    images: app.coverImagesOf(pl.id),
                     fallbackIcon: icon,
                     height: 140,
                   ),
