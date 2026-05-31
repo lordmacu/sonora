@@ -120,11 +120,43 @@ class _PlaylistCardState extends State<_PlaylistCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PlaylistCover(
-                localPath: cover?.thumbnailPath,
-                url: cover?.thumbnailUrl,
-                fallbackIcon: icon,
-                height: 140,
+              Stack(
+                children: [
+                  PlaylistCover(
+                    localPath: cover?.thumbnailPath,
+                    url: cover?.thumbnailUrl,
+                    fallbackIcon: icon,
+                    height: 140,
+                  ),
+                  if (_hover && !pl.isProtected)
+                    Positioned(
+                      top: 6,
+                      right: 6,
+                      child: Material(
+                        color: Colors.black54,
+                        shape: const CircleBorder(),
+                        child: PopupMenuButton<String>(
+                          color: AppColors.surfaceElevated,
+                          icon: const Icon(Icons.more_vert,
+                              color: Colors.white, size: 20),
+                          tooltip: 'Opciones',
+                          onSelected: (v) {
+                            if (v == 'delete') _confirmDelete(context, pl);
+                          },
+                          itemBuilder: (_) => const [
+                            PopupMenuItem(
+                                value: 'delete',
+                                child: ListTile(
+                                    leading: Icon(Icons.delete_outline,
+                                        color: Colors.redAccent),
+                                    title: Text('Eliminar playlist',
+                                        style:
+                                            TextStyle(color: Colors.redAccent)))),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
               ),
               const SizedBox(height: 10),
               Text(pl.name,
@@ -140,5 +172,31 @@ class _PlaylistCardState extends State<_PlaylistCard> {
         ),
       ),
     );
+  }
+
+  Future<void> _confirmDelete(BuildContext context, Playlist pl) async {
+    final app = context.read<AppState>();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surfaceElevated,
+        title: const Text('Eliminar playlist',
+            style: TextStyle(color: Colors.white)),
+        content: Text('¿Eliminar "${pl.name}"? Las canciones descargadas no se borran.',
+            style: const TextStyle(color: AppColors.onSurfaceVariant)),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancelar')),
+          FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Eliminar')),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await app.playlistService.delete(pl.id);
+    await app.refreshPlaylists();
   }
 }
