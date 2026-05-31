@@ -92,6 +92,8 @@
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 38px rgba(29,185,84,.4); }
     .btn-ghost { background: var(--card); color: var(--text); border: 1px solid var(--border); }
     .btn-ghost:hover { transform: translateY(-2px); border-color: #3a3a47; }
+    .btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .install h3 svg { width: 18px; height: 18px; vertical-align: -3px; margin-right: 7px; }
 
     /* Screenshot */
     .shot { margin: 50px auto 0; max-width: 1000px; }
@@ -113,7 +115,12 @@
       padding: 26px; transition: transform .15s, border-color .15s;
     }
     .feature:hover { transform: translateY(-3px); border-color: #34343f; }
-    .feature .ico { font-size: 26px; }
+    .feature .ico {
+      width: 46px; height: 46px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(29,185,84,.12); color: var(--accent);
+    }
+    .feature .ico svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .feature h3 { font-size: 18px; margin: 14px 0 8px; font-weight: 700; }
     .feature p { color: var(--muted); font-size: 15px; }
 
@@ -199,7 +206,7 @@
         <span class="pill">Free &amp; open source</span>
       </div>
       <div class="cta">
-        <a class="btn btn-primary" href="#downloads">⬇️ Download Sonora</a>
+        <a class="btn btn-primary" href="#downloads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download Sonora</a>
         <a class="btn btn-ghost" href="https://github.com/lordmacu/sonora" target="_blank" rel="noopener">View on GitHub</a>
       </div>
     </header>
@@ -210,15 +217,15 @@
       <h2 class="section-title">Everything you need to listen</h2>
       <p class="section-sub">Built with Flutter and libmpv for native, rock-solid desktop audio.</p>
       <div class="grid">
-        <div class="feature"><div class="ico">🎵</div><h3>Native playback</h3><p>Plays local files, YouTube streaming and radio-style queues with shuffle and gapless control via media_kit / libmpv.</p></div>
-        <div class="feature"><div class="ico">🔎</div><h3>YouTube Music search</h3><p>Search the full catalog through InnerTube with automatic fallback, and stream instantly.</p></div>
-        <div class="feature"><div class="ico">⬇️</div><h3>Download for offline</h3><p>Concurrency-limited download queue with progress, plus automatic disk caching as you listen.</p></div>
-        <div class="feature"><div class="ico">📥</div><h3>Spotify import</h3><p>Import playlists, albums or songs with no API and no login — even editorial/algorithmic playlists the API blocks.</p></div>
-        <div class="feature"><div class="ico">📄</div><h3>CSV import</h3><p>Bring your library in from Exportify or TuneMyMusic CSV exports in seconds.</p></div>
-        <div class="feature"><div class="ico">📁</div><h3>Playlists &amp; favorites</h3><p>Create and manage playlists with Spotify-style mosaic covers, favorites and recently played.</p></div>
-        <div class="feature"><div class="ico">⏯️</div><h3>Resume anywhere</h3><p>Remembers playback position and recovers your session after a restart or crash.</p></div>
-        <div class="feature"><div class="ico">📻</div><h3>Radio mode</h3><p>Auto-extends your queue with related tracks from a single song — no AI required.</p></div>
-        <div class="feature"><div class="ico">🖥️</div><h3>Cross-platform</h3><p>One app for macOS, Windows and Linux, with native window management and a sleek dark UI.</p></div>
+        <div class="feature"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></div><h3>Native playback</h3><p>Plays local files, YouTube streaming and radio-style queues with shuffle and gapless control via media_kit / libmpv.</p></div>
+        <div class="feature"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><h3>YouTube Music search</h3><p>Search the full catalog through InnerTube with automatic fallback, and stream instantly.</p></div>
+        <div class="feature"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><h3>Download for offline</h3><p>Concurrency-limited download queue with progress, plus automatic disk caching as you listen.</p></div>
+        <div class="feature"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24"/><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/></svg></div><h3>Spotify import</h3><p>Import playlists, albums or songs with no API and no login — even editorial/algorithmic playlists the API blocks.</p></div>
+        <div class="feature"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg></div><h3>CSV import</h3><p>Bring your library in from Exportify or TuneMyMusic CSV exports in seconds.</p></div>
+        <div class="feature"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15V6"/><path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/><path d="M12 12H3"/><path d="M16 6H3"/><path d="M12 18H3"/></svg></div><h3>Playlists &amp; favorites</h3><p>Create and manage playlists with Spotify-style mosaic covers, favorites and recently played.</p></div>
+        <div class="feature"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></div><h3>Resume anywhere</h3><p>Remembers playback position and recovers your session after a restart or crash.</p></div>
+        <div class="feature"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg></div><h3>Radio mode</h3><p>Auto-extends your queue with related tracks from a single song — no AI required.</p></div>
+        <div class="feature"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><h3>Cross-platform</h3><p>One app for macOS, Windows and Linux, with native window management and a sleek dark UI.</p></div>
       </div>
     </section>
 
@@ -243,9 +250,9 @@
         </div>
       </div>
       <div class="install">
-        <h3>🍎 After installing on macOS</h3>
+        <h3><svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>After installing on macOS</h3>
         <p>The app isn't code-signed yet, so macOS quarantines it. After dragging <b>Sonora</b> into <b>Applications</b>, run this in <b>Terminal</b> so it opens:</p>
-        <pre><code>xattr -dr com.apple.quarantine /Applications/sonora.app</code><button class="copy" onclick="navigator.clipboard.writeText('xattr -dr com.apple.quarantine /Applications/sonora.app');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</button></pre>
+        <pre><code>xattr -dr com.apple.quarantine /Applications/Sonora.app</code><button class="copy" onclick="navigator.clipboard.writeText('xattr -dr com.apple.quarantine /Applications/Sonora.app');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</button></pre>
         <p class="small">Alternatively: right-click the app → <b>Open</b> → <b>Open</b>. On <b>Windows</b>, if SmartScreen appears: <b>More info</b> → <b>Run anyway</b>. See the <a href="https://github.com/lordmacu/sonora#-downloads">README</a> for every platform.</p>
       </div>
     </section>

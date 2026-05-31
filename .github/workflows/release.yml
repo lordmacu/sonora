@@ -34,7 +34,7 @@ jobs:
       - name: Empaquetar .dmg
         run: |
           set -e
-          APP="build/macos/Build/Products/Release/sonora.app"
+          APP="build/macos/Build/Products/Release/Sonora.app"
           STAGE="$(mktemp -d)"
           cp -R "$APP" "$STAGE/"
           ln -s /Applications "$STAGE/Applications"

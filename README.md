@@ -49,7 +49,7 @@ Grab the latest version for your operating system:
 1. Open the `.dmg` and drag **Sonora** into the **Applications** folder.
 2. **After dragging it in, run this in Terminal so the app will open** (the build isn't signed, so macOS quarantines it):
    ```bash
-   xattr -dr com.apple.quarantine /Applications/sonora.app
+   xattr -dr com.apple.quarantine /Applications/Sonora.app
    ```
    Alternatively, right-click the app → **Open** → **Open**.
 

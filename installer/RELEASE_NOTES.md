@@ -8,7 +8,7 @@ primera vez. Es normal; así se abren:
 1. Abre el `.dmg` y arrastra **Sonora** a la carpeta **Aplicaciones**.
 2. Si dice *"no se puede abrir porque procede de un desarrollador no identificado"*:
    - Clic derecho sobre la app → **Abrir** → **Abrir**, **o**
-   - En Terminal: `xattr -dr com.apple.quarantine /Applications/sonora.app`
+   - En Terminal: `xattr -dr com.apple.quarantine /Applications/Sonora.app`
 
 ### 🪟 Windows — `Sonora-windows-setup.exe`
 - Si aparece *"Windows protegió tu PC"* (SmartScreen):
