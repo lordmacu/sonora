@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'l10n/app_localizations.dart';
 import 'services/download_manager.dart';
 import 'services/library_service.dart';
 import 'services/playlist_service.dart';
@@ -92,6 +93,9 @@ class SonoraApp extends StatelessWidget {
         title: 'Sonora',
         debugShowCheckedModeBanner: false,
         theme: buildTheme(),
+        // Idioma según el SO: español o inglés (inglés como respaldo).
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: const HomeShell(),
       ),
     );

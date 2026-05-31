@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/song.dart';
 import '../../services/player_service.dart';
 import '../../state/app_state.dart';
@@ -36,6 +37,7 @@ class _DownloadsViewState extends State<DownloadsView> {
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
     final player = context.read<PlayerService>();
+    final l10n = AppLocalizations.of(context);
     final songs = _sorted(app.downloadedSongs);
     final totalMb = app.downloadedSongs.fold<int>(0, (s, e) => s + e.fileSizeBytes) /
         (1024 * 1024);
@@ -67,14 +69,14 @@ class _DownloadsViewState extends State<DownloadsView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  const Text('Descargas',
-                      style: TextStyle(
+                  Text(l10n.downloads,
+                      style: const TextStyle(
                           color: Colors.white,
                           fontSize: 40,
                           fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   Text(
-                    '${app.downloadedSongs.length} canciones · ${totalMb.toStringAsFixed(1)} MB',
+                    '${l10n.songsCount(app.downloadedSongs.length)} · ${totalMb.toStringAsFixed(1)} MB',
                     style: const TextStyle(color: AppColors.onSurfaceVariant),
                   ),
                 ],
@@ -92,9 +94,9 @@ class _DownloadsViewState extends State<DownloadsView> {
         const SizedBox(height: 8),
         Expanded(
           child: songs.isEmpty
-              ? const Center(
-                  child: Text('No tienes descargas todavía',
-                      style: TextStyle(color: AppColors.onSurfaceVariant)),
+              ? Center(
+                  child: Text(l10n.noDownloads,
+                      style: const TextStyle(color: AppColors.onSurfaceVariant)),
                 )
               : ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
@@ -116,13 +118,14 @@ class _DownloadsViewState extends State<DownloadsView> {
   }
 
   Widget _normalControls(List<Song> songs, PlayerService player) {
+    final l10n = AppLocalizations.of(context);
     return Row(
       children: [
         if (songs.isNotEmpty)
           FilledButton.icon(
             onPressed: () => player.playSongs(songs),
             icon: const Icon(Icons.play_arrow),
-            label: const Text('Reproducir'),
+            label: Text(l10n.play),
           ),
         const SizedBox(width: 12),
         if (songs.isNotEmpty)
@@ -132,7 +135,7 @@ class _DownloadsViewState extends State<DownloadsView> {
               player.playSongs(songs);
             },
             icon: const Icon(Icons.shuffle),
-            label: const Text('Aleatorio'),
+            label: Text(l10n.shuffle),
           ),
         const Spacer(),
         if (songs.isNotEmpty)
@@ -142,20 +145,20 @@ class _DownloadsViewState extends State<DownloadsView> {
               _selected.clear();
             }),
             icon: const Icon(Icons.checklist),
-            label: const Text('Seleccionar'),
+            label: Text(l10n.select),
           ),
         const SizedBox(width: 8),
-        const Text('Ordenar:',
-            style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 12)),
+        Text('${l10n.sortBy} ',
+            style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 12)),
         const SizedBox(width: 8),
         DropdownButton<_Sort>(
           value: _sort,
           dropdownColor: AppColors.surfaceElevated,
           underline: const SizedBox(),
           style: const TextStyle(color: Colors.white, fontSize: 13),
-          items: const [
-            DropdownMenuItem(value: _Sort.title, child: Text('Título')),
-            DropdownMenuItem(value: _Sort.date, child: Text('Fecha')),
+          items: [
+            DropdownMenuItem(value: _Sort.title, child: Text(l10n.sortTitle)),
+            DropdownMenuItem(value: _Sort.date, child: Text(l10n.sortDate)),
           ],
           onChanged: (v) => setState(() => _sort = v ?? _Sort.title),
         ),
@@ -164,6 +167,7 @@ class _DownloadsViewState extends State<DownloadsView> {
   }
 
   Widget _selectionBar(List<Song> songs) {
+    final l10n = AppLocalizations.of(context);
     final allSelected =
         songs.isNotEmpty && _selected.length == songs.length;
     return Row(
@@ -179,17 +183,17 @@ class _DownloadsViewState extends State<DownloadsView> {
             }
           }),
           icon: Icon(allSelected ? Icons.deselect : Icons.select_all),
-          label: Text(allSelected ? 'Ninguno' : 'Seleccionar todos'),
+          label: Text(allSelected ? l10n.selectNone : l10n.selectAll),
         ),
         const Spacer(),
-        Text('${_selected.length} seleccionadas',
+        Text(l10n.selectedCount(_selected.length),
             style: const TextStyle(color: AppColors.onSurfaceVariant)),
         const SizedBox(width: 12),
         FilledButton.icon(
           onPressed: _selected.isEmpty ? null : () => _deleteSelected(songs),
           style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
           icon: const Icon(Icons.delete_outline),
-          label: Text('Eliminar (${_selected.length})'),
+          label: Text(l10n.deleteCount(_selected.length)),
         ),
         const SizedBox(width: 8),
         TextButton(
@@ -197,7 +201,7 @@ class _DownloadsViewState extends State<DownloadsView> {
             _selecting = false;
             _selected.clear();
           }),
-          child: const Text('Cancelar'),
+          child: Text(l10n.cancel),
         ),
       ],
     );
@@ -263,23 +267,24 @@ class _DownloadsViewState extends State<DownloadsView> {
   Future<void> _deleteSelected(List<Song> songs) async {
     final app = context.read<AppState>();
     final player = context.read<PlayerService>();
+    final l10n = AppLocalizations.of(context);
     final ids = _selected.toList();
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surfaceElevated,
-        title: const Text('Eliminar descargas',
-            style: TextStyle(color: Colors.white)),
-        content: Text('¿Eliminar ${ids.length} canción(es) descargada(s)?',
+        title: Text(l10n.deleteDownloadsTitle,
+            style: const TextStyle(color: Colors.white)),
+        content: Text(l10n.deleteDownloadsBody(ids.length),
             style: const TextStyle(color: AppColors.onSurfaceVariant)),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancelar')),
+              child: Text(l10n.cancel)),
           FilledButton(
               style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Eliminar')),
+              child: Text(l10n.delete)),
         ],
       ),
     );
@@ -300,22 +305,23 @@ class _DownloadsViewState extends State<DownloadsView> {
   Future<void> _deleteSong(Song song) async {
     final app = context.read<AppState>();
     final player = context.read<PlayerService>();
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surfaceElevated,
-        title: const Text('Eliminar descarga',
-            style: TextStyle(color: Colors.white)),
-        content: Text('¿Eliminar "${song.title}"?',
+        title: Text(l10n.deleteDownloadTitle,
+            style: const TextStyle(color: Colors.white)),
+        content: Text(l10n.deleteDownloadBody(song.title),
             style: const TextStyle(color: AppColors.onSurfaceVariant)),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancelar')),
+              child: Text(l10n.cancel)),
           FilledButton(
               style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Eliminar')),
+              child: Text(l10n.delete)),
         ],
       ),
     );

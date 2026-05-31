@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../services/player_service.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
@@ -146,7 +147,7 @@ class NowPlayingBar extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.playlist_add, size: 20),
                   color: AppColors.onSurfaceVariant,
-                  tooltip: 'Agregar a playlist',
+                  tooltip: AppLocalizations.of(context).addToPlaylist,
                   onPressed:
                       song == null ? null : () => showAddToPlaylistSheet(context, song),
                 ),

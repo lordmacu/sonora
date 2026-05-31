@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/song.dart';
 import '../../services/download_manager.dart';
 import '../../state/app_state.dart';
@@ -19,6 +20,7 @@ class SongDownloadButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final downloads = context.watch<DownloadManager>();
     final app = context.watch<AppState>();
+    final l10n = AppLocalizations.of(context);
     final task = downloads.taskFor(song.id);
 
     final downloaded = song.filePath.isNotEmpty ||
@@ -36,7 +38,7 @@ class SongDownloadButton extends StatelessWidget {
         return OutlinedButton.icon(
           onPressed: null,
           icon: const Icon(Icons.check_circle, color: AppColors.primary),
-          label: const Text('Descargada'),
+          label: Text(l10n.downloaded),
         );
       }
       if (inProgress) {
@@ -48,13 +50,13 @@ class SongDownloadButton extends StatelessWidget {
             child: CircularProgressIndicator(
                 strokeWidth: 2, value: progress, color: AppColors.primary),
           ),
-          label: const Text('Descargando…'),
+          label: Text(l10n.downloading),
         );
       }
       return OutlinedButton.icon(
         onPressed: () => _enqueue(downloads),
         icon: const Icon(Icons.download_rounded),
-        label: const Text('Descargar'),
+        label: Text(l10n.download),
       );
     }
 
@@ -82,7 +84,7 @@ class SongDownloadButton extends StatelessWidget {
     return IconButton(
       icon: const Icon(Icons.download_rounded, size: 18),
       color: AppColors.onSurfaceVariant,
-      tooltip: 'Descargar',
+      tooltip: l10n.download,
       onPressed: () => _enqueue(downloads),
     );
   }

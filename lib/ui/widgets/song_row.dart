@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/song.dart';
 import '../../services/player_service.dart';
 import '../../state/app_state.dart';
@@ -45,6 +46,7 @@ class _SongRowState extends State<SongRow> {
   Widget build(BuildContext context) {
     final player = context.watch<PlayerService>();
     final app = context.watch<AppState>();
+    final l10n = AppLocalizations.of(context);
     final isCurrent = player.current?.id == widget.song.id;
     final isFav = app.isFavorite(widget.song.id);
 
@@ -137,7 +139,7 @@ class _SongRowState extends State<SongRow> {
                 color: AppColors.surfaceElevated,
                 iconSize: 18,
                 icon: const Icon(Icons.more_horiz, color: AppColors.onSurfaceVariant),
-                tooltip: 'Más opciones',
+                tooltip: l10n.moreOptions,
                 onSelected: (v) {
                   switch (v) {
                     case 'next':
@@ -155,48 +157,48 @@ class _SongRowState extends State<SongRow> {
                   }
                 },
                 itemBuilder: (_) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                       value: 'next',
                       child: ListTile(
-                          leading: Icon(Icons.queue_play_next),
-                          title: Text('Reproducir a continuación'))),
-                  const PopupMenuItem(
+                          leading: const Icon(Icons.queue_play_next),
+                          title: Text(l10n.playNext))),
+                  PopupMenuItem(
                       value: 'queue',
                       child: ListTile(
-                          leading: Icon(Icons.add_to_queue),
-                          title: Text('Agregar a la cola'))),
-                  const PopupMenuItem(
+                          leading: const Icon(Icons.add_to_queue),
+                          title: Text(l10n.addToQueue))),
+                  PopupMenuItem(
                       value: 'playlist',
                       child: ListTile(
-                          leading: Icon(Icons.playlist_add),
-                          title: Text('Agregar a playlist'))),
+                          leading: const Icon(Icons.playlist_add),
+                          title: Text(l10n.addToPlaylist))),
                   if (widget.onRemoveFromPlaylist != null) ...[
                     const PopupMenuDivider(),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                         value: 'removePlaylist',
                         child: ListTile(
-                            leading: Icon(Icons.playlist_remove,
+                            leading: const Icon(Icons.playlist_remove,
                                 color: Colors.redAccent),
-                            title: Text('Quitar de la playlist',
-                                style: TextStyle(color: Colors.redAccent)))),
+                            title: Text(l10n.removeFromPlaylist,
+                                style: const TextStyle(color: Colors.redAccent)))),
                   ],
                   if (widget.onDelete != null) ...[
                     const PopupMenuDivider(),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                         value: 'delete',
                         child: ListTile(
-                            leading: Icon(Icons.delete_outline,
+                            leading: const Icon(Icons.delete_outline,
                                 color: Colors.redAccent),
-                            title: Text('Eliminar',
-                                style: TextStyle(color: Colors.redAccent)))),
+                            title: Text(l10n.delete,
+                                style: const TextStyle(color: Colors.redAccent)))),
                   ],
                   if (widget.onMenu != null) ...[
                     const PopupMenuDivider(),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                         value: 'more',
                         child: ListTile(
-                            leading: Icon(Icons.more_horiz),
-                            title: Text('Más opciones…'))),
+                            leading: const Icon(Icons.more_horiz),
+                            title: Text(l10n.moreOptions))),
                   ],
                 ],
               ),

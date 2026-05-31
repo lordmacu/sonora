@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/playlist.dart';
 import '../../services/player_service.dart';
 import '../../state/app_state.dart';
@@ -10,23 +11,24 @@ import '../widgets/artwork.dart';
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
-  String _greeting() {
+  String _greeting(AppLocalizations l10n) {
     final h = DateTime.now().hour;
-    if (h >= 5 && h < 12) return 'Buenos días';
-    if (h >= 12 && h < 21) return 'Buenas tardes';
-    return 'Buenas noches';
+    if (h >= 5 && h < 12) return l10n.greetingMorning;
+    if (h >= 12 && h < 21) return l10n.greetingAfternoon;
+    return l10n.greetingEvening;
   }
 
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
     final player = context.read<PlayerService>();
+    final l10n = AppLocalizations.of(context);
     final recent = app.downloadedSongs.take(6).toList();
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(28, 28, 28, 28),
       children: [
-        Text(_greeting(),
+        Text(_greeting(l10n),
             style: const TextStyle(
                 color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold)),
         const SizedBox(height: 24),
@@ -37,30 +39,30 @@ class HomeView extends StatelessWidget {
           children: [
             _QuickCard(
               icon: Icons.search,
-              label: 'Buscar música',
+              label: l10n.quickSearch,
               onTap: () => app.go(AppView.search),
             ),
             _QuickCard(
               icon: Icons.download,
-              label: 'Tus descargas',
+              label: l10n.quickDownloads,
               onTap: () => app.go(AppView.downloads),
             ),
             _QuickCard(
               icon: Icons.playlist_add,
-              label: 'Importar CSV',
+              label: l10n.quickImport,
               onTap: () => app.go(AppView.import),
             ),
             _QuickCard(
               icon: Icons.favorite,
-              label: 'Favoritos',
+              label: l10n.favorites,
               onTap: () => app.openPlaylist(Playlist.favoritesId),
             ),
           ],
         ),
         const SizedBox(height: 32),
         if (recent.isNotEmpty) ...[
-          const Text('Escuchado recientemente',
-              style: TextStyle(
+          Text(l10n.recentlyPlayed,
+              style: const TextStyle(
                   color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           SizedBox(
@@ -85,8 +87,8 @@ class HomeView extends StatelessWidget {
           _EmptyHome(onSearch: () => app.go(AppView.search)),
         const SizedBox(height: 32),
         if (app.playlists.isNotEmpty) ...[
-          const Text('Tus playlists',
-              style: TextStyle(
+          Text(l10n.yourPlaylists,
+              style: const TextStyle(
                   color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           Wrap(
@@ -98,7 +100,7 @@ class HomeView extends StatelessWidget {
                   width: 160,
                   child: _AlbumCard(
                     title: pl.name,
-                    subtitle: '${app.playlistService.songCount(pl.id)} canciones',
+                    subtitle: l10n.songsCount(app.playlistService.songCount(pl.id)),
                     icon: pl.id == Playlist.favoritesId
                         ? Icons.favorite
                         : Icons.queue_music,
@@ -276,16 +278,17 @@ class _EmptyHome extends StatelessWidget {
         children: [
           const Icon(Icons.music_note, size: 56, color: AppColors.onSurfaceVariant),
           const SizedBox(height: 16),
-          const Text('Aún no tienes música',
-              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(AppLocalizations.of(context).emptyHomeTitle,
+              style: const TextStyle(
+                  color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          const Text('Busca y descarga canciones para escucharlas sin conexión',
-              style: TextStyle(color: AppColors.onSurfaceVariant)),
+          Text(AppLocalizations.of(context).emptyHomeSubtitle,
+              style: const TextStyle(color: AppColors.onSurfaceVariant)),
           const SizedBox(height: 16),
           FilledButton.icon(
             onPressed: onSearch,
             icon: const Icon(Icons.search),
-            label: const Text('Buscar música'),
+            label: Text(AppLocalizations.of(context).quickSearch),
           ),
         ],
       ),

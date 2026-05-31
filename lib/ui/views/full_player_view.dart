@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/song.dart';
 import '../../services/player_service.dart';
 import '../../state/app_state.dart';
@@ -16,6 +17,7 @@ class FullPlayerView extends StatelessWidget {
   Widget build(BuildContext context) {
     final player = context.watch<PlayerService>();
     final app = context.read<AppState>();
+    final l10n = AppLocalizations.of(context);
     final song = player.current;
 
     return Column(
@@ -31,7 +33,7 @@ class FullPlayerView extends StatelessWidget {
                 onPressed: () => app.setPlayerExpanded(false),
               ),
               const Spacer(),
-              const Text('REPRODUCIENDO',
+              Text(l10n.nowPlaying,
                   style: TextStyle(
                       color: AppColors.onSurfaceVariant,
                       fontSize: 11,
@@ -44,9 +46,9 @@ class FullPlayerView extends StatelessWidget {
         ),
         Expanded(
           child: song == null
-              ? const Center(
-                  child: Text('No hay nada reproduciéndose',
-                      style: TextStyle(color: AppColors.onSurfaceVariant)),
+              ? Center(
+                  child: Text(l10n.nothingPlaying,
+                      style: const TextStyle(color: AppColors.onSurfaceVariant)),
                 )
               : Row(
                   children: [
@@ -102,6 +104,7 @@ class FullPlayerView extends StatelessWidget {
 
   Widget _actions(BuildContext context, Song song) {
     final player = context.watch<PlayerService>();
+    final l10n = AppLocalizations.of(context);
     final radioOn = player.radioEnabled;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -112,18 +115,18 @@ class FullPlayerView extends StatelessWidget {
             ? FilledButton.icon(
                 onPressed: player.toggleRadio,
                 icon: const Icon(Icons.radio),
-                label: const Text('Radio'),
+                label: Text(l10n.radio),
               )
             : OutlinedButton.icon(
                 onPressed: player.toggleRadio,
                 icon: const Icon(Icons.radio),
-                label: const Text('Radio'),
+                label: Text(l10n.radio),
               ),
         const SizedBox(width: 12),
         OutlinedButton.icon(
           onPressed: () => showAddToPlaylistSheet(context, song),
           icon: const Icon(Icons.playlist_add),
-          label: const Text('Agregar a lista'),
+          label: Text(l10n.addToList),
         ),
         const SizedBox(width: 12),
         SongDownloadButton(song: song, labeled: true),
@@ -136,23 +139,24 @@ class _QueuePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final player = context.watch<PlayerService>();
+    final l10n = AppLocalizations.of(context);
     final queue = player.queue;
     final current = player.current;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Text('Cola',
-              style: TextStyle(
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: Text(l10n.queue,
+              style: const TextStyle(
                   color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
         ),
         Expanded(
           child: queue.isEmpty
-              ? const Center(
-                  child: Text('Cola vacía',
-                      style: TextStyle(color: AppColors.onSurfaceVariant)))
+              ? Center(
+                  child: Text(l10n.emptyQueue,
+                      style: const TextStyle(color: AppColors.onSurfaceVariant)))
               : ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   itemCount: queue.length,

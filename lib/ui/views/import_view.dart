@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/import_track.dart';
 import '../../services/csv_import.dart';
 import '../../services/download_manager.dart';
@@ -34,28 +35,27 @@ class _ImportViewState extends State<ImportView> {
   }
 
   Future<void> _importSpotify() async {
+    final l10n = AppLocalizations.of(context);
     final ctrl = TextEditingController();
     final url = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surfaceElevated,
-        title: const Text('Importar de Spotify',
-            style: TextStyle(color: Colors.white)),
+        title: Text(l10n.importSpotifyTitle,
+            style: const TextStyle(color: Colors.white)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-                'Pega el enlace de una playlist, álbum o canción de Spotify (incluidas las editoriales). No requiere login.',
-                style: TextStyle(
+            Text(l10n.importSpotifyDesc,
+                style: const TextStyle(
                     color: AppColors.onSurfaceVariant, fontSize: 13)),
             const SizedBox(height: 12),
             TextField(
               controller: ctrl,
               autofocus: true,
               style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                  hintText: 'https://open.spotify.com/playlist/... (o /album/, /track/)'),
+              decoration: InputDecoration(hintText: l10n.importSpotifyHint),
               onSubmitted: (v) => Navigator.pop(ctx, v),
             ),
           ],
@@ -63,10 +63,10 @@ class _ImportViewState extends State<ImportView> {
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancelar')),
+              child: Text(l10n.cancel)),
           FilledButton(
               onPressed: () => Navigator.pop(ctx, ctrl.text),
-              child: const Text('Importar')),
+              child: Text(l10n.importAction)),
         ],
       ),
     );
@@ -197,6 +197,7 @@ class _ImportViewState extends State<ImportView> {
   @override
   Widget build(BuildContext context) {
     final downloads = context.watch<DownloadManager>();
+    final l10n = AppLocalizations.of(context);
 
     // sincronizar estado de descarga real
     for (final t in _tracks) {
@@ -226,15 +227,14 @@ class _ImportViewState extends State<ImportView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Importar playlists',
-                        style: TextStyle(
+                    Text(l10n.importTitle,
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 32,
                             fontWeight: FontWeight.bold)),
                     const SizedBox(height: 6),
-                    const Text(
-                        'Pega el enlace de una playlist pública de Spotify, o importa un CSV (Exportify / TuneMyMusic). Las canciones se buscan y descargan desde YouTube.',
-                        style: TextStyle(color: AppColors.onSurfaceVariant)),
+                    Text(l10n.importSubtitle,
+                        style: const TextStyle(color: AppColors.onSurfaceVariant)),
                   ],
                 ),
               ),
@@ -245,13 +245,13 @@ class _ImportViewState extends State<ImportView> {
                   FilledButton.icon(
                     onPressed: _loading ? null : _importSpotify,
                     icon: const Icon(Icons.library_music),
-                    label: const Text('Spotify'),
+                    label: Text(l10n.spotify),
                   ),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
                     onPressed: _loading ? null : _pickCsv,
                     icon: const Icon(Icons.upload_file),
-                    label: const Text('CSV'),
+                    label: Text(l10n.csv),
                   ),
                 ],
               ),
@@ -261,7 +261,7 @@ class _ImportViewState extends State<ImportView> {
         if (_error != null)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 8),
-            child: Text('Error: $_error',
+            child: Text(l10n.errorWithMessage(_error!),
                 style: const TextStyle(color: Colors.redAccent)),
           ),
         if (_tracks.isNotEmpty) _toolbar(),
@@ -271,6 +271,7 @@ class _ImportViewState extends State<ImportView> {
   }
 
   Widget _toolbar() {
+    final l10n = AppLocalizations.of(context);
     final allSelected = _selectedCount == _tracks.length;
     return Padding(
       padding: const EdgeInsets.fromLTRB(28, 8, 28, 8),
@@ -283,7 +284,7 @@ class _ImportViewState extends State<ImportView> {
               }
             }),
             icon: Icon(allSelected ? Icons.deselect : Icons.select_all),
-            label: Text(allSelected ? 'Deseleccionar' : 'Seleccionar todo'),
+            label: Text(allSelected ? l10n.deselect : l10n.selectAll),
           ),
           const Spacer(),
           if (_sourceName != null) ...[
@@ -298,7 +299,7 @@ class _ImportViewState extends State<ImportView> {
             const Text('·', style: TextStyle(color: AppColors.onSurfaceVariant)),
             const SizedBox(width: 8),
           ],
-          Text('${_tracks.length} canciones',
+          Text(l10n.songsCount(_tracks.length),
               style: const TextStyle(color: AppColors.onSurfaceVariant)),
           const SizedBox(width: 16),
           OutlinedButton.icon(
@@ -306,7 +307,7 @@ class _ImportViewState extends State<ImportView> {
                 ? null
                 : () => _process(download: false),
             icon: const Icon(Icons.playlist_add),
-            label: Text('Agregar a lista ($_selectedCount)'),
+            label: Text(l10n.addToListCount(_selectedCount)),
           ),
           const SizedBox(width: 8),
           FilledButton.icon(
@@ -319,7 +320,7 @@ class _ImportViewState extends State<ImportView> {
                     height: 16,
                     child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
                 : const Icon(Icons.download),
-            label: Text('Descargar ($_selectedCount)'),
+            label: Text(l10n.downloadCount(_selectedCount)),
           ),
         ],
       ),
@@ -331,14 +332,14 @@ class _ImportViewState extends State<ImportView> {
       return const Center(child: CircularProgressIndicator(color: AppColors.primary));
     }
     if (_tracks.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.playlist_add, size: 56, color: AppColors.onSurfaceVariant),
-            SizedBox(height: 12),
-            Text('Importa desde Spotify o un CSV para empezar',
-                style: TextStyle(color: AppColors.onSurfaceVariant)),
+            const Icon(Icons.playlist_add, size: 56, color: AppColors.onSurfaceVariant),
+            const SizedBox(height: 12),
+            Text(AppLocalizations.of(context).importEmpty,
+                style: const TextStyle(color: AppColors.onSurfaceVariant)),
           ],
         ),
       );
@@ -391,22 +392,22 @@ class _TrackRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          _stateWidget(),
+          _stateWidget(context),
         ],
       ),
     );
   }
 
-  Widget _stateWidget() {
+  Widget _stateWidget(BuildContext context) {
     switch (track.state) {
       case TrackDownloadState.pending:
         return const SizedBox(width: 80);
       case TrackDownloadState.searching:
-        return const SizedBox(
+        return SizedBox(
           width: 80,
-          child: Text('Buscando…',
+          child: Text(AppLocalizations.of(context).searching,
               textAlign: TextAlign.right,
-              style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 12)),
+              style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 12)),
         );
       case TrackDownloadState.downloading:
         return SizedBox(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/playlist.dart';
 import '../../state/app_state.dart';
 import '../../theme.dart';
@@ -12,6 +13,7 @@ class PlaylistsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
+    final l10n = AppLocalizations.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -20,14 +22,14 @@ class PlaylistsView extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(28, 32, 28, 16),
           child: Row(
             children: [
-              const Text('Tus playlists',
-                  style: TextStyle(
+              Text(l10n.yourPlaylists,
+                  style: const TextStyle(
                       color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
               const Spacer(),
               FilledButton.icon(
                 onPressed: () => _create(context),
                 icon: const Icon(Icons.add),
-                label: const Text('Nueva'),
+                label: Text(l10n.newButton),
               ),
             ],
           ),
@@ -54,24 +56,25 @@ class PlaylistsView extends StatelessWidget {
 
   Future<void> _create(BuildContext context) async {
     final app = context.read<AppState>();
+    final l10n = AppLocalizations.of(context);
     final ctrl = TextEditingController();
     final name = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surfaceElevated,
-        title: const Text('Nueva playlist', style: TextStyle(color: Colors.white)),
+        title: Text(l10n.newPlaylist, style: const TextStyle(color: Colors.white)),
         content: TextField(
           controller: ctrl,
           autofocus: true,
           style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(hintText: 'Nombre'),
+          decoration: InputDecoration(hintText: l10n.playlistNameHint),
           onSubmitted: (v) => Navigator.pop(ctx, v),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
           FilledButton(
               onPressed: () => Navigator.pop(ctx, ctrl.text),
-              child: const Text('Crear')),
+              child: Text(l10n.create)),
         ],
       ),
     );
@@ -96,6 +99,7 @@ class _PlaylistCardState extends State<_PlaylistCard> {
   @override
   Widget build(BuildContext context) {
     final app = context.read<AppState>();
+    final l10n = AppLocalizations.of(context);
     final pl = widget.playlist;
     final count = app.resolvedCountOf(pl.id);
     final icon = pl.id == Playlist.favoritesId
@@ -137,19 +141,19 @@ class _PlaylistCardState extends State<_PlaylistCard> {
                           color: AppColors.surfaceElevated,
                           icon: const Icon(Icons.more_vert,
                               color: Colors.white, size: 20),
-                          tooltip: 'Opciones',
+                          tooltip: l10n.options,
                           onSelected: (v) {
                             if (v == 'delete') _confirmDelete(context, pl);
                           },
-                          itemBuilder: (_) => const [
+                          itemBuilder: (_) => [
                             PopupMenuItem(
                                 value: 'delete',
                                 child: ListTile(
-                                    leading: Icon(Icons.delete_outline,
+                                    leading: const Icon(Icons.delete_outline,
                                         color: Colors.redAccent),
-                                    title: Text('Eliminar playlist',
-                                        style:
-                                            TextStyle(color: Colors.redAccent)))),
+                                    title: Text(l10n.deletePlaylist,
+                                        style: const TextStyle(
+                                            color: Colors.redAccent)))),
                           ],
                         ),
                       ),
@@ -163,7 +167,7 @@ class _PlaylistCardState extends State<_PlaylistCard> {
                   style: const TextStyle(
                       color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600)),
               const SizedBox(height: 4),
-              Text('$count canciones',
+              Text(l10n.songsCount(count),
                   style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 12)),
             ],
           ),
@@ -174,22 +178,23 @@ class _PlaylistCardState extends State<_PlaylistCard> {
 
   Future<void> _confirmDelete(BuildContext context, Playlist pl) async {
     final app = context.read<AppState>();
+    final l10n = AppLocalizations.of(context);
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surfaceElevated,
-        title: const Text('Eliminar playlist',
-            style: TextStyle(color: Colors.white)),
-        content: Text('¿Eliminar "${pl.name}"? Las canciones descargadas no se borran.',
+        title: Text(l10n.deletePlaylist,
+            style: const TextStyle(color: Colors.white)),
+        content: Text(l10n.deletePlaylistBody(pl.name),
             style: const TextStyle(color: AppColors.onSurfaceVariant)),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancelar')),
+              child: Text(l10n.cancel)),
           FilledButton(
               style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Eliminar')),
+              child: Text(l10n.delete)),
         ],
       ),
     );

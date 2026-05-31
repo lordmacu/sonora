@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../services/player_service.dart';
 import '../../state/app_state.dart';
 import '../../theme.dart';
@@ -35,29 +36,30 @@ class _SettingsViewState extends State<SettingsView> {
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
     final player = context.read<PlayerService>();
+    final l10n = AppLocalizations.of(context);
     final localFolder = app.library.localFolder;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(28, 32, 28, 28),
       children: [
-        const Text('Ajustes',
-            style: TextStyle(
+        Text(l10n.settings,
+            style: const TextStyle(
                 color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
         const SizedBox(height: 24),
-        _section('Biblioteca local'),
+        _section(l10n.localLibrary),
         _card(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Carpeta de música local',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+              Text(l10n.localMusicFolder,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
               const SizedBox(height: 4),
-              Text(localFolder ?? 'No seleccionada',
+              Text(localFolder ?? l10n.notSelected,
                   style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 13)),
               if (_scannedCount != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
-                  child: Text('$_scannedCount archivos de audio encontrados',
+                  child: Text(l10n.audioFilesFound(_scannedCount!),
                       style: const TextStyle(color: AppColors.primary, fontSize: 13)),
                 ),
               const SizedBox(height: 12),
@@ -66,7 +68,7 @@ class _SettingsViewState extends State<SettingsView> {
                   OutlinedButton.icon(
                     onPressed: _scanning ? null : _pickFolder,
                     icon: const Icon(Icons.folder_open),
-                    label: const Text('Elegir carpeta'),
+                    label: Text(l10n.chooseFolder),
                   ),
                   const SizedBox(width: 12),
                   if (localFolder != null)
@@ -81,7 +83,7 @@ class _SettingsViewState extends State<SettingsView> {
                               }
                             },
                       icon: const Icon(Icons.play_arrow),
-                      label: const Text('Reproducir carpeta'),
+                      label: Text(l10n.playFolder),
                     ),
                   if (_scanning) ...[
                     const SizedBox(width: 12),
@@ -97,32 +99,32 @@ class _SettingsViewState extends State<SettingsView> {
           ),
         ),
         const SizedBox(height: 24),
-        _section('Almacenamiento'),
+        _section(l10n.storage),
         _card(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${app.downloadedSongs.length} canciones descargadas',
+              Text(l10n.downloadedSongsCount(app.downloadedSongs.length),
                   style: const TextStyle(color: Colors.white)),
               const SizedBox(height: 4),
               Text(
-                '${(app.downloadedSongs.fold<int>(0, (s, e) => s + e.fileSizeBytes) / (1024 * 1024)).toStringAsFixed(1)} MB en disco',
+                l10n.mbOnDisk((app.downloadedSongs.fold<int>(0, (s, e) => s + e.fileSizeBytes) / (1024 * 1024)).toStringAsFixed(1)),
                 style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 13),
               ),
             ],
           ),
         ),
         const SizedBox(height: 24),
-        _section('Acerca de'),
+        _section(l10n.about),
         _card(
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Sonora',
+              const Text('Sonora',
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-              SizedBox(height: 4),
-              Text('Reproductor de escritorio · v1.0',
-                  style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 13)),
+              const SizedBox(height: 4),
+              Text(l10n.appTagline,
+                  style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 13)),
             ],
           ),
         ),

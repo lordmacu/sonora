@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/playlist.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
@@ -12,6 +13,7 @@ class Sidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       width: 240,
@@ -43,31 +45,31 @@ class Sidebar extends StatelessWidget {
           const SizedBox(height: 20),
           _NavItem(
             icon: Icons.home_rounded,
-            label: 'Inicio',
+            label: l10n.navHome,
             selected: app.view == AppView.home,
             onTap: () => app.go(AppView.home),
           ),
           _NavItem(
             icon: Icons.search_rounded,
-            label: 'Buscar',
+            label: l10n.navSearch,
             selected: app.view == AppView.search,
             onTap: () => app.go(AppView.search),
           ),
           _NavItem(
             icon: Icons.download_rounded,
-            label: 'Descargas',
+            label: l10n.navDownloads,
             selected: app.view == AppView.downloads,
             onTap: () => app.go(AppView.downloads),
           ),
           _NavItem(
             icon: Icons.library_music_rounded,
-            label: 'Tus playlists',
+            label: l10n.navPlaylists,
             selected: app.view == AppView.playlists,
             onTap: () => app.go(AppView.playlists),
           ),
           _NavItem(
             icon: Icons.playlist_add_rounded,
-            label: 'Importar CSV',
+            label: l10n.navImport,
             selected: app.view == AppView.import,
             onTap: () => app.go(AppView.import),
           ),
@@ -79,8 +81,8 @@ class Sidebar extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('PLAYLISTS',
-                    style: TextStyle(
+                Text(l10n.playlistsHeader,
+                    style: const TextStyle(
                         color: AppColors.onSurfaceVariant,
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
@@ -112,7 +114,7 @@ class Sidebar extends StatelessWidget {
           const Divider(height: 1, indent: 24, endIndent: 24),
           _NavItem(
             icon: Icons.settings_rounded,
-            label: 'Ajustes',
+            label: l10n.navSettings,
             selected: app.view == AppView.settings,
             onTap: () => app.go(AppView.settings),
           ),
@@ -124,7 +126,7 @@ class Sidebar extends StatelessWidget {
 
   Future<void> _createPlaylist(BuildContext context) async {
     final app = context.read<AppState>();
-    final name = await _promptName(context, 'Nueva playlist');
+    final name = await _promptName(context, AppLocalizations.of(context).newPlaylist);
     if (name == null || name.trim().isEmpty) return;
     final pl = await app.playlistService.create(name.trim());
     await app.refreshPlaylists();
@@ -134,6 +136,7 @@ class Sidebar extends StatelessWidget {
 
 Future<String?> _promptName(BuildContext context, String title,
     {String initial = ''}) {
+  final l10n = AppLocalizations.of(context);
   final ctrl = TextEditingController(text: initial);
   return showDialog<String>(
     context: context,
@@ -144,14 +147,15 @@ Future<String?> _promptName(BuildContext context, String title,
         controller: ctrl,
         autofocus: true,
         style: const TextStyle(color: Colors.white),
-        decoration: const InputDecoration(hintText: 'Nombre'),
+        decoration: InputDecoration(hintText: l10n.playlistNameHint),
         onSubmitted: (v) => Navigator.pop(ctx, v),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+        TextButton(
+            onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
         FilledButton(
           onPressed: () => Navigator.pop(ctx, ctrl.text),
-          child: const Text('Guardar'),
+          child: Text(l10n.save),
         ),
       ],
     ),
@@ -249,7 +253,7 @@ class _PlaylistItem extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  Text('$count canciones',
+                  Text(AppLocalizations.of(context).songsCount(count),
                       style: const TextStyle(
                           color: AppColors.onSurfaceVariant, fontSize: 11)),
                 ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/playlist.dart';
 import '../../services/player_service.dart';
 import '../../state/app_state.dart';
@@ -15,6 +16,7 @@ class PlaylistDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
     final player = context.read<PlayerService>();
+    final l10n = AppLocalizations.of(context);
     final id = app.currentPlaylistId;
     if (id == null) return const SizedBox();
     final pl = app.playlistById(id);
@@ -45,7 +47,7 @@ class PlaylistDetailView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const Text('PLAYLIST',
+                    Text(l10n.playlistLabel,
                         style: TextStyle(
                             color: AppColors.onSurfaceVariant,
                             fontSize: 12,
@@ -60,7 +62,7 @@ class PlaylistDetailView extends StatelessWidget {
                             fontSize: 40,
                             fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
-                    Text('${songs.length} canciones',
+                    Text(l10n.songsCount(songs.length),
                         style: const TextStyle(color: AppColors.onSurfaceVariant)),
                   ],
                 ),
@@ -76,9 +78,9 @@ class PlaylistDetailView extends StatelessWidget {
                       await _delete(context, pl);
                     }
                   },
-                  itemBuilder: (_) => const [
-                    PopupMenuItem(value: 'rename', child: Text('Renombrar')),
-                    PopupMenuItem(value: 'delete', child: Text('Eliminar playlist')),
+                  itemBuilder: (_) => [
+                    PopupMenuItem(value: 'rename', child: Text(l10n.rename)),
+                    PopupMenuItem(value: 'delete', child: Text(l10n.deletePlaylist)),
                   ],
                 ),
             ],
@@ -92,7 +94,7 @@ class PlaylistDetailView extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: () => player.playSongs(songs),
                   icon: const Icon(Icons.play_arrow),
-                  label: const Text('Reproducir'),
+                  label: Text(l10n.play),
                 ),
               const SizedBox(width: 12),
               if (songs.isNotEmpty)
@@ -102,7 +104,7 @@ class PlaylistDetailView extends StatelessWidget {
                     player.playSongs(songs);
                   },
                   icon: const Icon(Icons.shuffle),
-                  label: const Text('Aleatorio'),
+                  label: Text(l10n.shuffle),
                 ),
             ],
           ),
@@ -110,9 +112,9 @@ class PlaylistDetailView extends StatelessWidget {
         const SizedBox(height: 12),
         Expanded(
           child: songs.isEmpty
-              ? const Center(
-                  child: Text('Esta playlist está vacía',
-                      style: TextStyle(color: AppColors.onSurfaceVariant)),
+              ? Center(
+                  child: Text(l10n.emptyPlaylist,
+                      style: const TextStyle(color: AppColors.onSurfaceVariant)),
                 )
               : ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -132,12 +134,13 @@ class PlaylistDetailView extends StatelessWidget {
 
   Future<void> _rename(BuildContext context, Playlist pl) async {
     final app = context.read<AppState>();
+    final l10n = AppLocalizations.of(context);
     final ctrl = TextEditingController(text: pl.name);
     final name = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surfaceElevated,
-        title: const Text('Renombrar playlist', style: TextStyle(color: Colors.white)),
+        title: Text(l10n.renamePlaylist, style: const TextStyle(color: Colors.white)),
         content: TextField(
           controller: ctrl,
           autofocus: true,
@@ -145,10 +148,10 @@ class PlaylistDetailView extends StatelessWidget {
           onSubmitted: (v) => Navigator.pop(ctx, v),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
           FilledButton(
               onPressed: () => Navigator.pop(ctx, ctrl.text),
-              child: const Text('Guardar')),
+              child: Text(l10n.save)),
         ],
       ),
     );
@@ -159,25 +162,24 @@ class PlaylistDetailView extends StatelessWidget {
 
   Future<void> _delete(BuildContext context, Playlist pl) async {
     final app = context.read<AppState>();
+    final l10n = AppLocalizations.of(context);
     final count = app.resolvedCountOf(pl.id);
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surfaceElevated,
-        title: const Text('Eliminar playlist',
-            style: TextStyle(color: Colors.white)),
-        content: Text(
-            'Se eliminará la playlist «${pl.name}» y se quitarán sus $count canciones de la lista. '
-            'Las que estén descargadas seguirán en tu biblioteca.',
+        title: Text(l10n.deletePlaylist,
+            style: const TextStyle(color: Colors.white)),
+        content: Text(l10n.deletePlaylistDetailBody(pl.name, count),
             style: const TextStyle(color: AppColors.onSurfaceVariant)),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancelar')),
+              child: Text(l10n.cancel)),
           FilledButton(
               style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Eliminar')),
+              child: Text(l10n.delete)),
         ],
       ),
     );

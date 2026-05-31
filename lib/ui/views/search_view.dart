@@ -6,6 +6,7 @@ import '../../models/youtube_result.dart';
 import '../../services/download_manager.dart';
 import '../../services/player_service.dart';
 import '../../services/youtube_service.dart';
+import '../../l10n/app_localizations.dart';
 import '../../state/app_state.dart';
 import '../../theme.dart';
 import '../widgets/add_to_playlist.dart';
@@ -70,6 +71,7 @@ class _SearchViewState extends State<SearchView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
         Padding(
@@ -84,7 +86,7 @@ class _SearchViewState extends State<SearchView> {
                   onChanged: (_) => setState(() {}), // filtra descargas en vivo
                   onSubmitted: (_) => _search(),
                   decoration: InputDecoration(
-                    hintText: '¿Qué quieres escuchar?',
+                    hintText: l10n.searchHint,
                     prefixIcon: const Icon(Icons.search),
                     filled: true,
                     fillColor: AppColors.surfaceElevated,
@@ -96,7 +98,7 @@ class _SearchViewState extends State<SearchView> {
                 ),
               ),
               const SizedBox(width: 12),
-              FilledButton(onPressed: _search, child: const Text('Buscar')),
+              FilledButton(onPressed: _search, child: Text(l10n.searchButton)),
             ],
           ),
         ),
@@ -106,12 +108,13 @@ class _SearchViewState extends State<SearchView> {
   }
 
   Widget _body() {
+    final l10n = AppLocalizations.of(context);
     if (_loading) {
       return const Center(child: CircularProgressIndicator(color: AppColors.primary));
     }
     if (_error != null) {
       return Center(
-        child: Text('Error: $_error',
+        child: Text(l10n.errorWithMessage(_error!),
             style: const TextStyle(color: AppColors.onSurfaceVariant)),
       );
     }
@@ -143,9 +146,7 @@ class _SearchViewState extends State<SearchView> {
           Padding(
             padding: const EdgeInsets.fromLTRB(28, 0, 28, 8),
             child: Text(
-              local.isEmpty
-                  ? 'Sin coincidencias en tus descargas. Pulsa "Buscar" para buscar en YouTube.'
-                  : 'En tus descargas · pulsa "Buscar" para buscar en YouTube',
+              local.isEmpty ? l10n.noLocalMatches : l10n.inDownloadsHint,
               style: const TextStyle(
                   color: AppColors.onSurfaceVariant, fontSize: 12),
             ),
@@ -167,10 +168,9 @@ class _SearchViewState extends State<SearchView> {
       );
     }
 
-    return const Center(
-      child: Text(
-          'Escribe para filtrar tus descargas, o pulsa "Buscar" para YouTube',
-          style: TextStyle(color: AppColors.onSurfaceVariant)),
+    return Center(
+      child: Text(l10n.searchInitialHint,
+          style: const TextStyle(color: AppColors.onSurfaceVariant)),
     );
   }
 }
@@ -201,6 +201,7 @@ class _ResultRowState extends State<_ResultRow> {
     final downloads = context.watch<DownloadManager>();
     final player = context.watch<PlayerService>();
     final app = context.watch<AppState>();
+    final l10n = AppLocalizations.of(context);
     final r = widget.result;
 
     final task = downloads.taskFor(r.videoId);
@@ -269,7 +270,7 @@ class _ResultRowState extends State<_ResultRow> {
             PopupMenuButton<String>(
               color: AppColors.surfaceElevated,
               icon: const Icon(Icons.more_vert, color: AppColors.onSurfaceVariant, size: 20),
-              tooltip: 'Más opciones',
+              tooltip: l10n.moreOptions,
               onSelected: (v) {
                 final song = _asSong();
                 switch (v) {
@@ -281,22 +282,22 @@ class _ResultRowState extends State<_ResultRow> {
                     showAddToPlaylistSheet(context, song);
                 }
               },
-              itemBuilder: (_) => const [
+              itemBuilder: (_) => [
                 PopupMenuItem(
                     value: 'next',
                     child: ListTile(
-                        leading: Icon(Icons.queue_play_next),
-                        title: Text('Reproducir a continuación'))),
+                        leading: const Icon(Icons.queue_play_next),
+                        title: Text(l10n.playNext))),
                 PopupMenuItem(
                     value: 'queue',
                     child: ListTile(
-                        leading: Icon(Icons.add_to_queue),
-                        title: Text('Agregar a la cola'))),
+                        leading: const Icon(Icons.add_to_queue),
+                        title: Text(l10n.addToQueue))),
                 PopupMenuItem(
                     value: 'playlist',
                     child: ListTile(
-                        leading: Icon(Icons.playlist_add),
-                        title: Text('Agregar a playlist'))),
+                        leading: const Icon(Icons.playlist_add),
+                        title: Text(l10n.addToPlaylist))),
               ],
             ),
             _downloadButton(context, downloads, task, isDownloaded),
@@ -338,7 +339,7 @@ class _ResultRowState extends State<_ResultRow> {
       icon: const Icon(Icons.download_rounded),
       color: AppColors.onSurfaceVariant,
       iconSize: 20,
-      tooltip: 'Descargar',
+      tooltip: AppLocalizations.of(context).download,
       onPressed: () {
         final r = widget.result;
         downloads.enqueue(r.videoId, r.title, r.author, thumbnailUrl: r.thumbnailUrl);
