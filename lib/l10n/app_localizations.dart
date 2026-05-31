@@ -182,6 +182,12 @@ abstract class AppLocalizations {
   /// **'Favorites'**
   String get favorites;
 
+  /// No description provided for @playlistGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get playlistGeneral;
+
   /// No description provided for @recentlyPlayed.
   ///
   /// In en, this message translates to:

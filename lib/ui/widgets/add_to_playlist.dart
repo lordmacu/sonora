@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../l10n/labels.dart';
 import '../../models/playlist.dart';
 import '../../models/song.dart';
 import '../../state/app_state.dart';
@@ -78,13 +79,13 @@ Future<void> showAddToPlaylistSheet(BuildContext context, Song song) async {
                             : Icons.queue_music,
                         color: AppColors.onSurfaceVariant,
                       ),
-                      title: Text(pl.name,
+                      title: Text(playlistDisplayName(l10n, pl),
                           style: const TextStyle(color: Colors.white)),
                       subtitle: Text(
                           l10n.songsCount(app.playlistService.songCount(pl.id)),
                           style: const TextStyle(
                               color: AppColors.onSurfaceVariant, fontSize: 12)),
-                      onTap: () => add(pl.id, pl.name),
+                      onTap: () => add(pl.id, playlistDisplayName(l10n, pl)),
                     ),
                 ],
               ),

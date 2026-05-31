@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../l10n/labels.dart';
 import '../../models/playlist.dart';
 import '../../services/player_service.dart';
 import '../../state/app_state.dart';
@@ -54,7 +55,7 @@ class PlaylistDetailView extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1)),
                     const SizedBox(height: 8),
-                    Text(pl.name,
+                    Text(playlistDisplayName(l10n, pl),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(

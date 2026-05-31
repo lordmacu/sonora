@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../l10n/labels.dart';
 import '../../models/playlist.dart';
 import '../../state/app_state.dart';
 import '../../theme.dart';
@@ -161,7 +162,7 @@ class _PlaylistCardState extends State<_PlaylistCard> {
                 ],
               ),
               const SizedBox(height: 10),
-              Text(pl.name,
+              Text(playlistDisplayName(l10n, pl),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(

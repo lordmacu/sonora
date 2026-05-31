@@ -51,6 +51,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get favorites => 'Favorites';
 
   @override
+  String get playlistGeneral => 'General';
+
+  @override
   String get recentlyPlayed => 'Recently played';
 
   @override
