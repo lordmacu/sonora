@@ -7,9 +7,12 @@
 **A desktop music player** — search, listen and download from YouTube Music,
 and import your Spotify playlists with no login and no API.
 
+[![Website](https://img.shields.io/badge/Website-lordmacu.github.io%2Fsonora-1db954)](https://lordmacu.github.io/sonora/)
 [![Release](https://img.shields.io/github/v/release/lordmacu/sonora)](https://github.com/lordmacu/sonora/releases/latest)
 [![Flutter](https://img.shields.io/badge/Flutter-Desktop-02569B?logo=flutter)](https://flutter.dev)
 ![Platforms](https://img.shields.io/badge/macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-grey)
+
+**🌐 Website: [lordmacu.github.io/sonora](https://lordmacu.github.io/sonora/)**
 
 [⬇️ Downloads](#-downloads) · [✨ Features](#-features) · [🚀 Getting started](#-getting-started)
 

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sonora — Desktop music player</title>
+  <meta name="description" content="A desktop music player. Search, listen and download from YouTube Music, and import your Spotify playlists with no login and no API." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Sonora — Desktop music player" />
+  <meta property="og:description" content="Search, listen and download from YouTube Music, and import your Spotify playlists with no login and no API." />
+  <meta property="og:image" content="home.png" />
+  <meta property="og:type" content="website" />
+
+  <link rel="icon" href="logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #0b0b0f;
+      --bg-soft: #14141b;
+      --card: #17171f;
+      --border: #26262f;
+      --text: #f4f4f6;
+      --muted: #a0a0ad;
+      --accent: #1db954;
+      --accent-2: #6d5cff;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    .glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(60vw 60vw at 80% -10%, rgba(109,92,255,0.18), transparent 60%),
+        radial-gradient(50vw 50vw at 0% 0%, rgba(29,185,84,0.14), transparent 55%);
+      z-index: 0;
+    }
+    .wrap { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+    /* Nav */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 0;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 20px; }
+    .brand img { width: 36px; height: 36px; border-radius: 9px; }
+    .nav-links { display: flex; gap: 22px; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-weight: 500; font-size: 15px; transition: color .15s; }
+    .nav-links a:hover { color: var(--text); }
+    .gh-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid var(--border); padding: 9px 16px; border-radius: 999px;
+      color: var(--text) !important; font-weight: 600 !important; font-size: 14px !important;
+      background: var(--card); transition: border-color .15s, transform .1s;
+    }
+    .gh-btn:hover { border-color: #3a3a47; transform: translateY(-1px); }
+
+    /* Hero */
+    header { text-align: center; padding: 60px 0 30px; }
+    .hero-logo { width: 96px; height: 96px; border-radius: 22px; box-shadow: 0 16px 50px rgba(0,0,0,.5); margin-bottom: 28px; }
+    h1 { font-size: clamp(40px, 7vw, 68px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
+    .tagline { color: var(--muted); font-size: clamp(17px, 2.4vw, 21px); max-width: 620px; margin: 18px auto 0; }
+    .badges { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 22px; }
+    .pill {
+      font-size: 13px; color: var(--muted); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 999px; background: var(--bg-soft);
+    }
+
+    .cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin: 34px 0 10px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 26px; border-radius: 12px; font-weight: 600; font-size: 16px;
+      text-decoration: none; transition: transform .12s, box-shadow .12s, opacity .12s;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), #17a347); color: #04210f; box-shadow: 0 10px 30px rgba(29,185,84,.3); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 38px rgba(29,185,84,.4); }
+    .btn-ghost { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+    .btn-ghost:hover { transform: translateY(-2px); border-color: #3a3a47; }
+
+    /* Screenshot */
+    .shot { margin: 50px auto 0; max-width: 1000px; }
+    .shot img {
+      width: 100%; border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: 0 30px 90px rgba(0,0,0,.6);
+    }
+
+    /* Sections */
+    section { padding: 72px 0; }
+    .section-title { font-size: clamp(28px, 4vw, 40px); font-weight: 800; letter-spacing: -0.02em; text-align: center; }
+    .section-sub { color: var(--muted); text-align: center; margin-top: 10px; max-width: 560px; margin-left: auto; margin-right: auto; }
+
+    /* Features grid */
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-top: 44px; }
+    .feature {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 26px; transition: transform .15s, border-color .15s;
+    }
+    .feature:hover { transform: translateY(-3px); border-color: #34343f; }
+    .feature .ico { font-size: 26px; }
+    .feature h3 { font-size: 18px; margin: 14px 0 8px; font-weight: 700; }
+    .feature p { color: var(--muted); font-size: 15px; }
+
+    /* Downloads */
+    .dl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-top: 44px; }
+    .dl-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 28px; text-align: center; transition: transform .15s, border-color .15s;
+    }
+    .dl-card:hover { transform: translateY(-3px); border-color: #34343f; }
+    .dl-card .os { font-size: 40px; }
+    .dl-card h3 { margin: 14px 0 4px; font-size: 20px; }
+    .dl-card .file { color: var(--muted); font-size: 13px; font-family: ui-monospace, monospace; margin-bottom: 18px; }
+    .dl-card a {
+      display: inline-block; width: 100%; padding: 12px; border-radius: 10px;
+      background: var(--accent); color: #04210f; font-weight: 700; text-decoration: none;
+      transition: opacity .12s;
+    }
+    .dl-card a:hover { opacity: .9; }
+    .note {
+      margin-top: 28px; text-align: center; color: var(--muted); font-size: 14px;
+      background: var(--bg-soft); border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+    }
+
+    footer { border-top: 1px solid var(--border); padding: 40px 0 60px; text-align: center; color: var(--muted); font-size: 14px; }
+    footer a { color: var(--text); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 640px) {
+      .nav-links a:not(.gh-btn) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="wrap">
+
+    <nav>
+      <div class="brand"><img src="logo.png" alt="" /> Sonora</div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#downloads">Downloads</a>
+        <a class="gh-btn" href="https://github.com/lordmacu/sonora" target="_blank" rel="noopener">
+          <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+          GitHub
+        </a>
+      </div>
+    </nav>
+
+    <header>
+      <img class="hero-logo" src="logo.png" alt="Sonora logo" />
+      <h1>Your music,<br />on the desktop.</h1>
+      <p class="tagline">Search, listen and download from YouTube Music, and import your Spotify playlists — no login, no API.</p>
+      <div class="badges">
+        <span class="pill">🍎 macOS</span>
+        <span class="pill">🪟 Windows</span>
+        <span class="pill">🐧 Linux</span>
+        <span class="pill">Free &amp; open source</span>
+      </div>
+      <div class="cta">
+        <a class="btn btn-primary" href="#downloads">⬇️ Download Sonora</a>
+        <a class="btn btn-ghost" href="https://github.com/lordmacu/sonora" target="_blank" rel="noopener">View on GitHub</a>
+      </div>
+    </header>
+
+    <div class="shot"><img src="home.png" alt="Sonora home screen" /></div>
+
+    <section id="features">
+      <h2 class="section-title">Everything you need to listen</h2>
+      <p class="section-sub">Built with Flutter and libmpv for native, rock-solid desktop audio.</p>
+      <div class="grid">
+        <div class="feature"><div class="ico">🎵</div><h3>Native playback</h3><p>Plays local files, YouTube streaming and radio-style queues with shuffle and gapless control via media_kit / libmpv.</p></div>
+        <div class="feature"><div class="ico">🔎</div><h3>YouTube Music search</h3><p>Search the full catalog through InnerTube with automatic fallback, and stream instantly.</p></div>
+        <div class="feature"><div class="ico">⬇️</div><h3>Download for offline</h3><p>Concurrency-limited download queue with progress, plus automatic disk caching as you listen.</p></div>
+        <div class="feature"><div class="ico">📥</div><h3>Spotify import</h3><p>Import playlists, albums or songs with no API and no login — even editorial/algorithmic playlists the API blocks.</p></div>
+        <div class="feature"><div class="ico">📄</div><h3>CSV import</h3><p>Bring your library in from Exportify or TuneMyMusic CSV exports in seconds.</p></div>
+        <div class="feature"><div class="ico">📁</div><h3>Playlists &amp; favorites</h3><p>Create and manage playlists with Spotify-style mosaic covers, favorites and recently played.</p></div>
+        <div class="feature"><div class="ico">⏯️</div><h3>Resume anywhere</h3><p>Remembers playback position and recovers your session after a restart or crash.</p></div>
+        <div class="feature"><div class="ico">📻</div><h3>Radio mode</h3><p>Auto-extends your queue with related tracks from a single song — no AI required.</p></div>
+        <div class="feature"><div class="ico">🖥️</div><h3>Cross-platform</h3><p>One app for macOS, Windows and Linux, with native window management and a sleek dark UI.</p></div>
+      </div>
+    </section>
+
+    <section id="downloads">
+      <h2 class="section-title">Download</h2>
+      <p class="section-sub">Grab the latest version for your operating system.</p>
+      <div class="dl-grid">
+        <div class="dl-card">
+          <div class="os">🍎</div><h3>macOS</h3>
+          <div class="file">Sonora-macos.dmg</div>
+          <a href="https://github.com/lordmacu/sonora/releases/latest/download/Sonora-macos.dmg">Download</a>
+        </div>
+        <div class="dl-card">
+          <div class="os">🪟</div><h3>Windows</h3>
+          <div class="file">Sonora-windows-setup.exe</div>
+          <a href="https://github.com/lordmacu/sonora/releases/latest/download/Sonora-windows-setup.exe">Download</a>
+        </div>
+        <div class="dl-card">
+          <div class="os">🐧</div><h3>Linux</h3>
+          <div class="file">Sonora-linux-x86_64.AppImage</div>
+          <a href="https://github.com/lordmacu/sonora/releases/latest/download/Sonora-linux-x86_64.AppImage">Download</a>
+        </div>
+      </div>
+      <p class="note">⚠️ The binaries are not code-signed yet, so your system may warn you the first time you open them. That's expected — see the <a href="https://github.com/lordmacu/sonora#-downloads" style="color:var(--text)">README</a> for how to open each platform.</p>
+    </section>
+
+    <footer>
+      <p>Built with Flutter · <a href="https://github.com/lordmacu/sonora">github.com/lordmacu/sonora</a></p>
+      <p style="margin-top:8px; font-size:13px;">Sonora does not host or distribute any content; it only plays and organizes what you choose to search and import.</p>
+    </footer>
+
+  </div>
+</body>
+</html>
