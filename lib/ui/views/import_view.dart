@@ -136,12 +136,19 @@ class _ImportViewState extends State<ImportView> {
     final app = context.read<AppState>();
     setState(() => _downloading = true);
 
-    // Crear la playlist destino una sola vez, con el nombre importado.
+    // Playlist destino: si ya existe una con ese nombre, reusarla; si no, crearla.
     if (_importPlaylistId == null) {
-      final pl = await app.createPlaylist(_sourceName?.trim().isNotEmpty == true
+      final name = _sourceName?.trim().isNotEmpty == true
           ? _sourceName!.trim()
-          : 'Importada');
-      _importPlaylistId = pl.id;
+          : 'Importada';
+      final existing = app.playlists
+          .where((p) => p.name.trim().toLowerCase() == name.toLowerCase());
+      if (existing.isNotEmpty) {
+        _importPlaylistId = existing.first.id;
+      } else {
+        final pl = await app.createPlaylist(name);
+        _importPlaylistId = pl.id;
+      }
     }
     final playlistId = _importPlaylistId!;
 
