@@ -73,9 +73,7 @@ class PlaylistDetailView extends StatelessWidget {
                     if (v == 'rename') {
                       await _rename(context, pl);
                     } else if (v == 'delete') {
-                      await app.playlistService.delete(pl.id);
-                      await app.refreshPlaylists();
-                      app.go(AppView.playlists);
+                      await _delete(context, pl);
                     }
                   },
                   itemBuilder: (_) => const [
@@ -157,6 +155,36 @@ class PlaylistDetailView extends StatelessWidget {
     if (name == null || name.trim().isEmpty) return;
     await app.playlistService.rename(pl.id, name.trim());
     await app.refreshPlaylists();
+  }
+
+  Future<void> _delete(BuildContext context, Playlist pl) async {
+    final app = context.read<AppState>();
+    final count = app.resolvedCountOf(pl.id);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surfaceElevated,
+        title: const Text('Eliminar playlist',
+            style: TextStyle(color: Colors.white)),
+        content: Text(
+            'Se eliminará la playlist «${pl.name}» y se quitarán sus $count canciones de la lista. '
+            'Las que estén descargadas seguirán en tu biblioteca.',
+            style: const TextStyle(color: AppColors.onSurfaceVariant)),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancelar')),
+          FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Eliminar')),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await app.playlistService.delete(pl.id);
+    await app.refreshPlaylists();
+    app.go(AppView.playlists);
   }
 
   Future<void> _removeFromPlaylist(

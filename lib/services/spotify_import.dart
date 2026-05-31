@@ -1,17 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/import_track.dart';
-
-/// Credenciales de la app de Spotify (opcionales; el import por `embed` no las
-/// necesita). Quedan por si se quiere usar la API oficial más adelante.
-class SpotifyConfig {
-  static String get clientId => dotenv.env['SPOTIFY_CLIENT_ID'] ?? '';
-  static String get clientSecret => dotenv.env['SPOTIFY_CLIENT_SECRET'] ?? '';
-}
 
 class SpotifyPlaylist {
   SpotifyPlaylist(this.name, this.tracks);

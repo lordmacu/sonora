@@ -191,6 +191,14 @@ class AppState extends ChangeNotifier {
     return out;
   }
 
+  /// Una sola carátula para el sidebar: una imagen "aleatoria" pero estable por
+  /// playlist (no parpadea entre reconstrucciones). null si no hay imágenes.
+  ({String? localPath, String? url})? singleCoverOf(String playlistId) {
+    final imgs = coverImagesOf(playlistId);
+    if (imgs.isEmpty) return null;
+    return imgs[playlistId.hashCode.abs() % imgs.length];
+  }
+
   /// Conteo de canciones REALMENTE mostrables (descargadas o con metadatos),
   /// no los videoIds crudos: evita contar ids huérfanos que ya no se ven.
   int resolvedCountOf(String playlistId) => songsOfPlaylist(playlistId).length;

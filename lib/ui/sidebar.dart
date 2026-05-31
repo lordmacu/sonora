@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/playlist.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+import 'widgets/artwork.dart';
 
 class Sidebar extends StatelessWidget {
   const Sidebar({super.key});
@@ -210,7 +211,9 @@ class _PlaylistItem extends StatelessWidget {
   Widget build(BuildContext context) {
     // Conteo de canciones mostrables (no ids huérfanos). El sidebar observa
     // AppState arriba, así que se actualiza al quitar/agregar/borrar.
-    final count = context.read<AppState>().resolvedCountOf(playlist.id);
+    final app = context.read<AppState>();
+    final count = app.resolvedCountOf(playlist.id);
+    final cover = app.singleCoverOf(playlist.id);
     final icon = playlist.id == Playlist.favoritesId
         ? Icons.favorite
         : playlist.id == Playlist.generalId
@@ -223,7 +226,14 @@ class _PlaylistItem extends StatelessWidget {
         color: selected ? Colors.white.withValues(alpha: 0.07) : null,
         child: Row(
           children: [
-            Icon(icon, size: 18, color: AppColors.onSurfaceVariant),
+            if (cover != null)
+              Artwork(localPath: cover.localPath, url: cover.url, size: 32, radius: 4)
+            else
+              SizedBox(
+                width: 32,
+                height: 32,
+                child: Icon(icon, size: 18, color: AppColors.onSurfaceVariant),
+              ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
