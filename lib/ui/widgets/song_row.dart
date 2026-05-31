@@ -19,6 +19,7 @@ class SongRow extends StatefulWidget {
     this.trailing,
     this.onMenu,
     this.onDelete,
+    this.onRemoveFromPlaylist,
   });
 
   final Song song;
@@ -29,6 +30,9 @@ class SongRow extends StatefulWidget {
 
   /// Si se provee, el menú de tres puntos muestra "Eliminar" directamente.
   final VoidCallback? onDelete;
+
+  /// Si se provee, el menú muestra "Quitar de la playlist" directamente.
+  final VoidCallback? onRemoveFromPlaylist;
 
   @override
   State<SongRow> createState() => _SongRowState();
@@ -144,6 +148,8 @@ class _SongRowState extends State<SongRow> {
                       showAddToPlaylistSheet(context, widget.song);
                     case 'delete':
                       widget.onDelete?.call();
+                    case 'removePlaylist':
+                      widget.onRemoveFromPlaylist?.call();
                     case 'more':
                       widget.onMenu?.call();
                   }
@@ -164,6 +170,16 @@ class _SongRowState extends State<SongRow> {
                       child: ListTile(
                           leading: Icon(Icons.playlist_add),
                           title: Text('Agregar a playlist'))),
+                  if (widget.onRemoveFromPlaylist != null) ...[
+                    const PopupMenuDivider(),
+                    const PopupMenuItem(
+                        value: 'removePlaylist',
+                        child: ListTile(
+                            leading: Icon(Icons.playlist_remove,
+                                color: Colors.redAccent),
+                            title: Text('Quitar de la playlist',
+                                style: TextStyle(color: Colors.redAccent)))),
+                  ],
                   if (widget.onDelete != null) ...[
                     const PopupMenuDivider(),
                     const PopupMenuItem(

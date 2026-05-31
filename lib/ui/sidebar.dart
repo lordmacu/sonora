@@ -208,8 +208,9 @@ class _PlaylistItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final app = context.read<AppState>();
-    final count = app.playlistService.songCount(playlist.id);
+    // Usar el conteo del objeto Playlist (refrescado por refreshPlaylists),
+    // no una lectura suelta de prefs, para que se actualice al quitar/agregar.
+    final count = playlist.songIds.length;
     final icon = playlist.id == Playlist.favoritesId
         ? Icons.favorite
         : playlist.id == Playlist.generalId

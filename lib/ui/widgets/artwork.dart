@@ -48,6 +48,66 @@ class Artwork extends StatelessWidget {
       );
 }
 
+/// Carátula de una playlist: imagen de la primera canción ([localPath]/[url]);
+/// si no hay, un degradado con [fallbackIcon]. Puede ser rectangular (tarjetas)
+/// o cuadrada (cabecera).
+class PlaylistCover extends StatelessWidget {
+  const PlaylistCover({
+    super.key,
+    this.localPath,
+    this.url,
+    required this.fallbackIcon,
+    this.width = double.infinity,
+    this.height = 140,
+    this.radius = 6,
+    this.iconSize = 52,
+  });
+
+  final String? localPath;
+  final String? url;
+  final IconData fallbackIcon;
+  final double width;
+  final double height;
+  final double radius;
+  final double iconSize;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget child;
+    if (localPath != null && localPath!.isNotEmpty && File(localPath!).existsSync()) {
+      child = Image.file(File(localPath!), width: width, height: height, fit: BoxFit.cover);
+    } else if (url != null && url!.isNotEmpty) {
+      child = CachedNetworkImage(
+        imageUrl: url!,
+        width: width,
+        height: height,
+        fit: BoxFit.cover,
+        placeholder: (_, __) => _gradient(),
+        errorWidget: (_, __, ___) => _gradient(),
+      );
+    } else {
+      child = _gradient();
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: SizedBox(width: width, height: height, child: child),
+    );
+  }
+
+  Widget _gradient() => Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [AppColors.primary.withValues(alpha: 0.7), AppColors.surfaceElevated],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Icon(fallbackIcon, size: iconSize, color: Colors.white),
+      );
+}
+
 String formatDuration(int seconds) {
   if (seconds <= 0) return '';
   final m = seconds ~/ 60;

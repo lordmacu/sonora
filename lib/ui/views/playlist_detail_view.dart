@@ -5,6 +5,7 @@ import '../../models/playlist.dart';
 import '../../services/player_service.dart';
 import '../../state/app_state.dart';
 import '../../theme.dart';
+import '../widgets/artwork.dart';
 import '../widgets/song_row.dart';
 
 class PlaylistDetailView extends StatelessWidget {
@@ -29,21 +30,15 @@ class PlaylistDetailView extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Container(
+              PlaylistCover(
+                localPath: songs.isEmpty ? null : songs.first.thumbnailPath,
+                url: songs.isEmpty ? null : songs.first.thumbnailUrl,
+                fallbackIcon:
+                    pl.id == Playlist.favoritesId ? Icons.favorite : Icons.queue_music,
                 width: 120,
                 height: 120,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [AppColors.primary, AppColors.primaryVariant],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                    pl.id == Playlist.favoritesId ? Icons.favorite : Icons.queue_music,
-                    size: 56,
-                    color: Colors.white),
+                radius: 8,
+                iconSize: 56,
               ),
               const SizedBox(width: 20),
               Expanded(
@@ -129,7 +124,8 @@ class PlaylistDetailView extends StatelessWidget {
                     song: songs[i],
                     index: i,
                     onPlay: () => player.playSongs(songs, startIndex: i),
-                    onMenu: () => _songMenu(context, id, songs[i].id),
+                    onRemoveFromPlaylist: () =>
+                        _removeFromPlaylist(context, id, songs[i].id),
                   ),
                 ),
         ),
@@ -164,23 +160,10 @@ class PlaylistDetailView extends StatelessWidget {
     await app.refreshPlaylists();
   }
 
-  Future<void> _songMenu(BuildContext context, String playlistId, String videoId) async {
+  Future<void> _removeFromPlaylist(
+      BuildContext context, String playlistId, String videoId) async {
     final app = context.read<AppState>();
-    final action = await showModalBottomSheet<String>(
-      context: context,
-      backgroundColor: AppColors.surfaceElevated,
-      builder: (ctx) => SafeArea(
-        child: ListTile(
-          leading: const Icon(Icons.remove_circle_outline, color: Colors.redAccent),
-          title: const Text('Quitar de la playlist',
-              style: TextStyle(color: Colors.white)),
-          onTap: () => Navigator.pop(ctx, 'remove'),
-        ),
-      ),
-    );
-    if (action == 'remove') {
-      await app.playlistService.removeSong(playlistId, videoId);
-      await app.refreshPlaylists();
-    }
+    await app.playlistService.removeSong(playlistId, videoId);
+    await app.refreshPlaylists();
   }
 }

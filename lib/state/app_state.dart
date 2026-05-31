@@ -147,6 +147,12 @@ class AppState extends ChangeNotifier {
     return pl;
   }
 
+  /// Primera canción de una playlist (para usar su carátula como cover).
+  Song? firstSongOf(String playlistId) {
+    final songs = songsOfPlaylist(playlistId);
+    return songs.isEmpty ? null : songs.first;
+  }
+
   Playlist? playlistById(String id) {
     for (final p in _playlists) {
       if (p.id == id) return p;

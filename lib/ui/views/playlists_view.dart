@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../models/playlist.dart';
 import '../../state/app_state.dart';
 import '../../theme.dart';
+import '../widgets/artwork.dart';
 
 class PlaylistsView extends StatelessWidget {
   const PlaylistsView({super.key});
@@ -96,12 +97,13 @@ class _PlaylistCardState extends State<_PlaylistCard> {
   Widget build(BuildContext context) {
     final app = context.read<AppState>();
     final pl = widget.playlist;
-    final count = app.playlistService.songCount(pl.id);
+    final count = pl.songIds.length;
     final icon = pl.id == Playlist.favoritesId
         ? Icons.favorite
         : pl.id == Playlist.generalId
             ? Icons.queue_music
             : Icons.playlist_play;
+    final cover = app.firstSongOf(pl.id);
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hover = true),
@@ -118,21 +120,11 @@ class _PlaylistCardState extends State<_PlaylistCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: double.infinity,
+              PlaylistCover(
+                localPath: cover?.thumbnailPath,
+                url: cover?.thumbnailUrl,
+                fallbackIcon: icon,
                 height: 140,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppColors.primary.withValues(alpha: 0.7),
-                      AppColors.surfaceElevated,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Icon(icon, size: 52, color: Colors.white),
               ),
               const SizedBox(height: 10),
               Text(pl.name,
