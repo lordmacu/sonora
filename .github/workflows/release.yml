@@ -120,10 +120,9 @@ jobs:
           mkdir -p "$APPDIR/usr/bin"
           cp -r "$BUNDLE"/* "$APPDIR/usr/bin/"
 
-          # Ícono placeholder (verde Sonora) si el proyecto no trae uno.
-          convert -size 256x256 xc:'#1DB954' \
-            -gravity center -pointsize 120 -fill white -annotate +0+0 'S' \
-            "$APPDIR/sonora.png"
+          # Ícono placeholder (verde Sonora). Sin texto para no depender de
+          # fuentes de ImageMagick (que no están en el runner).
+          convert -size 256x256 xc:'#1DB954' "$APPDIR/sonora.png"
 
           cat > "$APPDIR/sonora.desktop" <<'EOF'
           [Desktop Entry]

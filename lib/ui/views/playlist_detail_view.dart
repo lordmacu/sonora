@@ -190,6 +190,8 @@ class PlaylistDetailView extends StatelessWidget {
   Future<void> _removeFromPlaylist(
       BuildContext context, String playlistId, String videoId) async {
     final app = context.read<AppState>();
+    // Si la canción se está reproduciendo, quitarla también del reproductor.
+    context.read<PlayerService>().removeFromQueueById(videoId);
     await app.playlistService.removeSong(playlistId, videoId);
     await app.refreshPlaylists();
   }

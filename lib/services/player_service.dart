@@ -201,6 +201,42 @@ class PlayerService extends ChangeNotifier {
     _saveState();
   }
 
+  /// Quita de la cola todas las apariciones de [songId]. Si era la canción
+  /// actual, detiene y oculta el reproductor (current queda null).
+  void removeFromQueueById(String songId) {
+    if (!_queue.any((s) => s.id == songId)) return;
+
+    if (current?.id == songId) {
+      _player.stop();
+      _queue.clear();
+      _order = [];
+      _orderPos = -1;
+      _playing = false;
+      _buffering = false;
+      _position = Duration.zero;
+      _duration = Duration.zero;
+      _radioEnabled = false;
+      notifyListeners();
+      _saveState();
+      return;
+    }
+
+    // No es la actual: la quitamos preservando la canción en curso.
+    final currentSong = current;
+    final ordered =
+        _order.map((i) => _queue[i]).where((s) => s.id != songId).toList();
+    _queue
+      ..clear()
+      ..addAll(ordered);
+    _order = List<int>.generate(_queue.length, (i) => i);
+    _orderPos = currentSong == null
+        ? -1
+        : _queue.indexWhere((s) => s.id == currentSong.id);
+    if (_orderPos < 0 && _queue.isNotEmpty) _orderPos = 0;
+    notifyListeners();
+    _saveState();
+  }
+
   /// Inserta la canción justo después de la actual en el orden de reproducción.
   void playNext(Song song) {
     _queue.add(song);

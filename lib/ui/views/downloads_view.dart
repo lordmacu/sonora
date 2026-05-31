@@ -262,6 +262,7 @@ class _DownloadsViewState extends State<DownloadsView> {
 
   Future<void> _deleteSelected(List<Song> songs) async {
     final app = context.read<AppState>();
+    final player = context.read<PlayerService>();
     final ids = _selected.toList();
     final confirmed = await showDialog<bool>(
       context: context,
@@ -284,6 +285,7 @@ class _DownloadsViewState extends State<DownloadsView> {
     );
     if (confirmed != true) return;
     for (final id in ids) {
+      player.removeFromQueueById(id);
       await app.library.deleteDownload(id);
     }
     await app.refreshLibrary();
@@ -297,6 +299,7 @@ class _DownloadsViewState extends State<DownloadsView> {
 
   Future<void> _deleteSong(Song song) async {
     final app = context.read<AppState>();
+    final player = context.read<PlayerService>();
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -317,6 +320,7 @@ class _DownloadsViewState extends State<DownloadsView> {
       ),
     );
     if (confirmed != true) return;
+    player.removeFromQueueById(song.id);
     await app.library.deleteDownload(song.id);
     await app.refreshLibrary();
   }
