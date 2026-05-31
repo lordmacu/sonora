@@ -47,9 +47,11 @@ Grab the latest version for your operating system:
 <summary>🍎 <b>macOS</b></summary>
 
 1. Open the `.dmg` and drag **Sonora** into the **Applications** folder.
-2. If it says *"cannot be opened because it is from an unidentified developer"*:
-   - Right-click the app → **Open** → **Open**, **or**
-   - In Terminal: `xattr -dr com.apple.quarantine /Applications/sonora.app`
+2. **After dragging it in, run this in Terminal so the app will open** (the build isn't signed, so macOS quarantines it):
+   ```bash
+   xattr -dr com.apple.quarantine /Applications/sonora.app
+   ```
+   Alternatively, right-click the app → **Open** → **Open**.
 
 </details>
 
