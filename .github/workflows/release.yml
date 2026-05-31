@@ -35,12 +35,31 @@ jobs:
         run: |
           set -e
           APP="build/macos/Build/Products/Release/Sonora.app"
-          STAGE="$(mktemp -d)"
-          cp -R "$APP" "$STAGE/"
-          ln -s /Applications "$STAGE/Applications"
+          DMG="dist/Sonora-macos.dmg"
           mkdir -p dist
-          hdiutil create -volname "Sonora" -srcfolder "$STAGE" \
-            -ov -format UDZO "dist/Sonora-macos.dmg"
+          brew install create-dmg
+
+          # DMG moderno: ventana con la app y un alias de Applications al lado,
+          # íconos grandes. Si create-dmg falla en el runner, caemos a hdiutil.
+          create-dmg \
+            --volname "Sonora" \
+            --window-pos 200 120 \
+            --window-size 640 400 \
+            --icon-size 128 \
+            --icon "Sonora.app" 170 195 \
+            --hide-extension "Sonora.app" \
+            --app-drop-link 470 195 \
+            --no-internet-enable \
+            "$DMG" "$APP" \
+          || {
+            echo "create-dmg falló; usando hdiutil como respaldo"
+            rm -f "$DMG"
+            STAGE="$(mktemp -d)"
+            cp -R "$APP" "$STAGE/"
+            ln -s /Applications "$STAGE/Applications"
+            hdiutil create -volname "Sonora" -srcfolder "$STAGE" \
+              -ov -format UDZO "$DMG"
+          }
 
       - uses: actions/upload-artifact@v4
         with:
