@@ -127,7 +127,10 @@ class _ImportViewState extends State<ImportView> {
 
   int get _selectedCount => _tracks.where((t) => t.selected).length;
 
-  Future<void> _startDownload() async {
+  /// Procesa las pistas seleccionadas: busca cada una en YouTube, la agrega a la
+  /// playlist (con metadatos) y, si [download] es true, además la encola para
+  /// descargar. Si es false, queda en la playlist como streaming (sin bajar).
+  Future<void> _process({required bool download}) async {
     final yt = context.read<YoutubeService>();
     final downloads = context.read<DownloadManager>();
     final app = context.read<AppState>();
@@ -142,7 +145,6 @@ class _ImportViewState extends State<ImportView> {
     }
     final playlistId = _importPlaylistId!;
 
-    // buscar cada track en YouTube y encolar (concurrencia controlada por DownloadManager)
     final pending = _tracks
         .where((t) => t.selected && t.state == TrackDownloadState.pending)
         .toList();
@@ -158,10 +160,8 @@ class _ImportViewState extends State<ImportView> {
         }
         final r = results.first;
         track.videoId = r.videoId;
-        downloads.enqueue(r.videoId, track.name, track.artists,
-            thumbnailUrl: r.thumbnailUrl);
-        // Agregar a la playlist (guarda metadatos; se reproduce aunque aún no
-        // termine de descargarse, y al terminar pasa a local).
+        // Siempre: guardar metadatos + agregar a la playlist (reproducible aunque
+        // no se descargue; al descargarse pasa a local).
         await app.playlistService.saveSongMeta(
           r.videoId,
           track.name,
@@ -170,7 +170,15 @@ class _ImportViewState extends State<ImportView> {
           (track.durationMs / 1000).round(),
         );
         await app.playlistService.addSong(playlistId, r.videoId);
-        if (mounted) setState(() => track.state = TrackDownloadState.downloading);
+
+        if (download) {
+          downloads.enqueue(r.videoId, track.name, track.artists,
+              thumbnailUrl: r.thumbnailUrl);
+          if (mounted) setState(() => track.state = TrackDownloadState.downloading);
+        } else {
+          // Solo agregada (streaming): la marcamos como lista.
+          if (mounted) setState(() => track.state = TrackDownloadState.done);
+        }
       } catch (_) {
         if (mounted) setState(() => track.state = TrackDownloadState.error);
       }
@@ -286,8 +294,18 @@ class _ImportViewState extends State<ImportView> {
           Text('${_tracks.length} canciones',
               style: const TextStyle(color: AppColors.onSurfaceVariant)),
           const SizedBox(width: 16),
+          OutlinedButton.icon(
+            onPressed: (_downloading || _selectedCount == 0)
+                ? null
+                : () => _process(download: false),
+            icon: const Icon(Icons.playlist_add),
+            label: Text('Agregar a lista ($_selectedCount)'),
+          ),
+          const SizedBox(width: 8),
           FilledButton.icon(
-            onPressed: (_downloading || _selectedCount == 0) ? null : _startDownload,
+            onPressed: (_downloading || _selectedCount == 0)
+                ? null
+                : () => _process(download: true),
             icon: _downloading
                 ? const SizedBox(
                     width: 16,
