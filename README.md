@@ -34,7 +34,8 @@ Grab the latest version for your operating system:
 |--------|---------|----------|
 | 🍎 **macOS** | `Sonora-macos.dmg` | [Download](https://github.com/lordmacu/sonora/releases/latest/download/Sonora-macos.dmg) |
 | 🪟 **Windows** | `Sonora-windows-setup.exe` | [Download](https://github.com/lordmacu/sonora/releases/latest/download/Sonora-windows-setup.exe) |
-| 🐧 **Linux** | `Sonora-linux-x86_64.AppImage` | [Download](https://github.com/lordmacu/sonora/releases/latest/download/Sonora-linux-x86_64.AppImage) |
+| 🐧 **Linux** (Debian/Ubuntu, menu entry) | `Sonora-linux-amd64.deb` | [Download](https://github.com/lordmacu/sonora/releases/latest/download/Sonora-linux-amd64.deb) |
+| 🐧 **Linux** (portable) | `Sonora-linux-x86_64.AppImage` | [Download](https://github.com/lordmacu/sonora/releases/latest/download/Sonora-linux-x86_64.AppImage) |
 
 > 📦 Looking for a specific version? Check all the [releases](https://github.com/lordmacu/sonora/releases).
 
@@ -66,11 +67,20 @@ Grab the latest version for your operating system:
 <details>
 <summary>🐧 <b>Linux</b></summary>
 
+**`.deb` (Debian/Ubuntu — shows up in your applications menu):**
+```bash
+sudo apt install ./Sonora-linux-amd64.deb
+```
+Then launch **Sonora** from the menu. Uninstall with `sudo apt remove sonora`.
+
+**`.AppImage` (portable, any distro, no install):**
 ```bash
 chmod +x Sonora-linux-x86_64.AppImage
 ./Sonora-linux-x86_64.AppImage
 ```
-Works on most distros without installing anything.
+To make the AppImage appear in the menu too, use [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher).
+
+Requirements: x86_64, glibc ≥ 2.35 (Ubuntu 22.04+ / Debian 12+ / Fedora 36+…).
 
 </details>
 
