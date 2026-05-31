@@ -88,7 +88,30 @@ class AppState extends ChangeNotifier {
   // --- datos ---
 
   Future<void> refreshAll() async {
-    await Future.wait([refreshLibrary(), refreshPlaylists()]);
+    // Secuencial: la librería debe estar cargada antes de purgar huérfanos,
+    // para no eliminar descargas que aún no tienen metadatos guardados.
+    await refreshLibrary();
+    await refreshPlaylists();
+    await _purgeOrphanPlaylistSongs();
+  }
+
+  /// Elimina de las playlists los videoIds que ya no se pueden mostrar (ni
+  /// descargados ni con metadatos): ids huérfanos de flujos antiguos.
+  Future<void> _purgeOrphanPlaylistSongs() async {
+    var changed = false;
+    for (final pl in _playlists) {
+      final ids = playlistService.songIdsOf(pl.id);
+      final keep = ids
+          .where((id) =>
+              _songsById.containsKey(id) ||
+              playlistService.songMeta(id) != null)
+          .toList();
+      if (keep.length != ids.length) {
+        await playlistService.setSongs(pl.id, keep);
+        changed = true;
+      }
+    }
+    if (changed) await refreshPlaylists();
   }
 
   Future<void> refreshLibrary() async {

@@ -101,6 +101,11 @@ class PlaylistService {
     await _setSongs(playlistId, songs);
   }
 
+  /// Reemplaza la lista de canciones de una playlist (usado para purgar ids
+  /// huérfanos). No toca las protegidas si se quisiera, pero aquí solo guarda.
+  Future<void> setSongs(String playlistId, List<String> songs) =>
+      _setSongs(playlistId, songs);
+
   // --- metadatos de canciones en playlists ---
   // Las playlists guardan solo videoIds; para que las canciones de streaming
   // (aún no descargadas) se puedan mostrar y reproducir desde una playlist,
