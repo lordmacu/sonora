@@ -163,6 +163,7 @@ class PlaylistDetailView extends StatelessWidget {
 
   Future<void> _delete(BuildContext context, Playlist pl) async {
     final app = context.read<AppState>();
+    final player = context.read<PlayerService>();
     final l10n = AppLocalizations.of(context);
     final count = app.resolvedCountOf(pl.id);
     final ok = await showDialog<bool>(
@@ -185,6 +186,9 @@ class PlaylistDetailView extends StatelessWidget {
       ),
     );
     if (ok != true) return;
+    for (final id in app.playlistService.songIdsOf(pl.id)) {
+      player.removeFromQueueById(id);
+    }
     await app.playlistService.delete(pl.id);
     await app.refreshPlaylists();
     app.go(AppView.playlists);

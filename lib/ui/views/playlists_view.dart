@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/labels.dart';
 import '../../models/playlist.dart';
+import '../../services/player_service.dart';
 import '../../state/app_state.dart';
 import '../../theme.dart';
 import '../widgets/artwork.dart';
@@ -179,6 +180,7 @@ class _PlaylistCardState extends State<_PlaylistCard> {
 
   Future<void> _confirmDelete(BuildContext context, Playlist pl) async {
     final app = context.read<AppState>();
+    final player = context.read<PlayerService>();
     final l10n = AppLocalizations.of(context);
     final ok = await showDialog<bool>(
       context: context,
@@ -200,6 +202,11 @@ class _PlaylistCardState extends State<_PlaylistCard> {
       ),
     );
     if (ok != true) return;
+    // Quitar del reproductor las canciones de esta lista (oculta el player si
+    // la que sonaba estaba aquí).
+    for (final id in app.playlistService.songIdsOf(pl.id)) {
+      player.removeFromQueueById(id);
+    }
     await app.playlistService.delete(pl.id);
     await app.refreshPlaylists();
   }
