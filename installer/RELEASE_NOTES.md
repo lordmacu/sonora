@@ -14,9 +14,19 @@ primera vez. Es normal; así se abren:
 - Si aparece *"Windows protegió tu PC"* (SmartScreen):
   **Más información** → **Ejecutar de todas formas**.
 
-### 🐧 Linux — `Sonora-linux-x86_64.AppImage`
+### 🐧 Linux
+**Opción A — `.deb` (Debian/Ubuntu, aparece en el menú de aplicaciones):**
+```bash
+sudo apt install ./Sonora-linux-amd64.deb
+```
+Queda en el menú como "Sonora". Para desinstalar: `sudo apt remove sonora`.
+
+**Opción B — `.AppImage` (portátil, cualquier distro, sin instalar):**
 ```bash
 chmod +x Sonora-linux-x86_64.AppImage
 ./Sonora-linux-x86_64.AppImage
 ```
-Funciona en la mayoría de distros sin instalar nada.
+Para que el AppImage también salga en el menú, usa
+[AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher).
+
+Requisitos: x86_64, glibc ≥ 2.35 (Ubuntu 22.04+/Debian 12+/Fedora 36+…).
