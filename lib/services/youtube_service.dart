@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:youtube_explode_dart/youtube_explode_dart.dart' as yt;
@@ -254,22 +255,47 @@ class YoutubeService {
 
   final Map<String, _StreamUrl> _urlCache = {};
 
-  /// Devuelve la URL de audio para streaming. Usa el cliente ANDROID_VR porque
-  /// sus URLs (`c=ANDROID_VR`) no exigen un User-Agent específico en el CDN de
-  /// googlevideo, así que mpv las abre directamente (el cliente `android`
-  /// estándar sí exige el UA de la app y termina en 403).
-  ///
-  /// Cachea la URL respetando su parámetro `expire=`; reusa mientras no esté por
-  /// vencer. [forceRefresh] ignora la caché (p. ej. al recuperarse de un 403).
+  /// Clientes de InnerTube a probar, en orden. ANDROID_VR y TVHTML5 producen
+  /// URLs que mpv abre sin User-Agent especial; si YouTube rompe uno, caemos al
+  /// siguiente. (Antes se usaba solo ANDROID_VR y al romperse dejaba de sonar.)
+  static final _clients = <(String, yt.YoutubeApiClient)>[
+    ('ANDROID_VR', yt.YoutubeApiClient.androidVr),
+    ('TVHTML5', yt.YoutubeApiClient.tv),
+    ('IOS', yt.YoutubeApiClient.ios),
+    ('ANDROID', yt.YoutubeApiClient.android),
+  ];
+
+  /// Obtiene el manifest probando cada cliente en orden, con logs de cuál sirve.
+  Future<yt.StreamManifest> _getManifest(String videoId) async {
+    Object? lastError;
+    for (final (name, client) in _clients) {
+      try {
+        final manifest = await _yt.videos.streamsClient
+            .getManifest(videoId, ytClients: [client]);
+        if (manifest.audioOnly.isNotEmpty) {
+          debugPrint('YT: manifest de $videoId OK con cliente $name');
+          return manifest;
+        }
+        debugPrint('YT: $name no trajo audio para $videoId, probando siguiente…');
+      } catch (e) {
+        debugPrint('YT: cliente $name falló para $videoId: $e');
+        lastError = e;
+      }
+    }
+    throw Exception(
+        'No se pudo resolver el audio de $videoId con ningún cliente. '
+        'Último error: ${lastError ?? 'sin streams de audio'}');
+  }
+
+  /// Devuelve la URL de audio para streaming, probando varios clientes.
+  /// Cachea la URL respetando su `expire=`; [forceRefresh] ignora la caché.
   Future<String> getStreamUrl(String videoId, {bool forceRefresh = false}) async {
     final cached = _urlCache[videoId];
     if (!forceRefresh && cached != null && !cached.isExpiring) {
+      debugPrint('YT: usando URL cacheada de $videoId');
       return cached.url;
     }
-    final manifest = await _yt.videos.streamsClient.getManifest(
-      videoId,
-      ytClients: [yt.YoutubeApiClient.androidVr],
-    );
+    final manifest = await _getManifest(videoId);
     final url = _pickAudio(manifest).url.toString();
     _urlCache[videoId] = _StreamUrl(url);
     return url;
@@ -302,12 +328,8 @@ class YoutubeService {
     }
 
     final dir = await _library.audioDir();
-    // ANDROID_VR igual que en streaming: el cliente `android` estándar puede
-    // quedar bloqueado en la descarga (se queda en 0%).
-    final manifest = await _yt.videos.streamsClient.getManifest(
-      videoId,
-      ytClients: [yt.YoutubeApiClient.androidVr],
-    );
+    // Mismo fallback de clientes que el streaming (robusto ante cambios de YT).
+    final manifest = await _getManifest(videoId);
     final audio = _pickAudio(manifest);
     final total = audio.size.totalBytes;
 
