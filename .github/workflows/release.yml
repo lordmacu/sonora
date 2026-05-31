@@ -1,0 +1,159 @@
+name: Release
+
+# Genera binarios para macOS (.dmg), Windows (instalador .exe) y Linux (.AppImage).
+# - Push de un tag `vX.Y.Z` -> compila y adjunta los binarios a un GitHub Release.
+# - Ejecución manual (workflow_dispatch) -> compila y sube los binarios como artifacts.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: '3.38.3'
+
+jobs:
+  # ---------------------------------------------------------------------------
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter config --enable-macos-desktop
+      - run: flutter pub get
+      - run: flutter build macos --release
+
+      - name: Empaquetar .dmg
+        run: |
+          set -e
+          APP="build/macos/Build/Products/Release/sonora.app"
+          STAGE="$(mktemp -d)"
+          cp -R "$APP" "$STAGE/"
+          ln -s /Applications "$STAGE/Applications"
+          mkdir -p dist
+          hdiutil create -volname "Sonora" -srcfolder "$STAGE" \
+            -ov -format UDZO "dist/Sonora-macos.dmg"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sonora-macos
+          path: dist/Sonora-macos.dmg
+      - name: Adjuntar al Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: installer/RELEASE_NOTES.md
+          files: dist/Sonora-macos.dmg
+
+  # ---------------------------------------------------------------------------
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter config --enable-windows-desktop
+      - run: flutter pub get
+      - run: flutter build windows --release
+
+      - name: Instalar Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Compilar instalador
+        shell: pwsh
+        run: |
+          $ver = "${{ github.ref_name }}" -replace '^v',''
+          if ($ver -notmatch '^\d+\.\d+') { $ver = '1.0.0' }
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DMyAppVersion=$ver installer\windows\sonora.iss
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sonora-windows
+          path: dist/Sonora-windows-setup.exe
+      - name: Adjuntar al Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: installer/RELEASE_NOTES.md
+          files: dist/Sonora-windows-setup.exe
+
+  # ---------------------------------------------------------------------------
+  linux:
+    # 22.04 para mejor compatibilidad de glibc con distros más antiguas.
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependencias de compilación
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            clang cmake ninja-build pkg-config libgtk-3-dev \
+            libmpv-dev mpv libfuse2 imagemagick
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter config --enable-linux-desktop
+      - run: flutter pub get
+      - run: flutter build linux --release
+
+      - name: Construir AppImage
+        run: |
+          set -e
+          BUNDLE="build/linux/x64/release/bundle"
+          APPDIR="Sonora.AppDir"
+          rm -rf "$APPDIR"
+          mkdir -p "$APPDIR/usr/bin"
+          cp -r "$BUNDLE"/* "$APPDIR/usr/bin/"
+
+          # Ícono placeholder (verde Sonora) si el proyecto no trae uno.
+          convert -size 256x256 xc:'#1DB954' \
+            -gravity center -pointsize 120 -fill white -annotate +0+0 'S' \
+            "$APPDIR/sonora.png"
+
+          cat > "$APPDIR/sonora.desktop" <<'EOF'
+          [Desktop Entry]
+          Type=Application
+          Name=Sonora
+          Exec=sonora
+          Icon=sonora
+          Categories=AudioVideo;Audio;Player;
+          EOF
+
+          cat > "$APPDIR/AppRun" <<'EOF'
+          #!/bin/bash
+          HERE="$(dirname "$(readlink -f "$0")")"
+          exec "$HERE/usr/bin/sonora" "$@"
+          EOF
+          chmod +x "$APPDIR/AppRun"
+
+          wget -q "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
+          chmod +x appimagetool-x86_64.AppImage
+          mkdir -p dist
+          ARCH=x86_64 APPIMAGE_EXTRACT_AND_RUN=1 \
+            ./appimagetool-x86_64.AppImage "$APPDIR" "dist/Sonora-linux-x86_64.AppImage"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sonora-linux
+          path: dist/Sonora-linux-x86_64.AppImage
+      - name: Adjuntar al Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: installer/RELEASE_NOTES.md
+          files: dist/Sonora-linux-x86_64.AppImage

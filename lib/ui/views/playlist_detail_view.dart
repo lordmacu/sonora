@@ -1,0 +1,186 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../models/playlist.dart';
+import '../../services/player_service.dart';
+import '../../state/app_state.dart';
+import '../../theme.dart';
+import '../widgets/song_row.dart';
+
+class PlaylistDetailView extends StatelessWidget {
+  const PlaylistDetailView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final app = context.watch<AppState>();
+    final player = context.read<PlayerService>();
+    final id = app.currentPlaylistId;
+    if (id == null) return const SizedBox();
+    final pl = app.playlistById(id);
+    if (pl == null) return const SizedBox();
+    final songs = app.songsOfPlaylist(id);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // cabecera
+        Container(
+          padding: const EdgeInsets.fromLTRB(28, 28, 28, 20),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primary, AppColors.primaryVariant],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                    pl.id == Playlist.favoritesId ? Icons.favorite : Icons.queue_music,
+                    size: 56,
+                    color: Colors.white),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const Text('PLAYLIST',
+                        style: TextStyle(
+                            color: AppColors.onSurfaceVariant,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1)),
+                    const SizedBox(height: 8),
+                    Text(pl.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    Text('${songs.length} canciones',
+                        style: const TextStyle(color: AppColors.onSurfaceVariant)),
+                  ],
+                ),
+              ),
+              if (!pl.isProtected)
+                PopupMenuButton<String>(
+                  color: AppColors.surfaceElevated,
+                  icon: const Icon(Icons.more_horiz, color: AppColors.onSurfaceVariant),
+                  onSelected: (v) async {
+                    if (v == 'rename') {
+                      await _rename(context, pl);
+                    } else if (v == 'delete') {
+                      await app.playlistService.delete(pl.id);
+                      await app.refreshPlaylists();
+                      app.go(AppView.playlists);
+                    }
+                  },
+                  itemBuilder: (_) => const [
+                    PopupMenuItem(value: 'rename', child: Text('Renombrar')),
+                    PopupMenuItem(value: 'delete', child: Text('Eliminar playlist')),
+                  ],
+                ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Row(
+            children: [
+              if (songs.isNotEmpty)
+                FilledButton.icon(
+                  onPressed: () => player.playSongs(songs),
+                  icon: const Icon(Icons.play_arrow),
+                  label: const Text('Reproducir'),
+                ),
+              const SizedBox(width: 12),
+              if (songs.isNotEmpty)
+                OutlinedButton.icon(
+                  onPressed: () {
+                    player.toggleShuffle();
+                    player.playSongs(songs);
+                  },
+                  icon: const Icon(Icons.shuffle),
+                  label: const Text('Aleatorio'),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Expanded(
+          child: songs.isEmpty
+              ? const Center(
+                  child: Text('Esta playlist está vacía',
+                      style: TextStyle(color: AppColors.onSurfaceVariant)),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  itemCount: songs.length,
+                  itemBuilder: (_, i) => SongRow(
+                    song: songs[i],
+                    index: i,
+                    onPlay: () => player.playSongs(songs, startIndex: i),
+                    onMenu: () => _songMenu(context, id, songs[i].id),
+                  ),
+                ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _rename(BuildContext context, Playlist pl) async {
+    final app = context.read<AppState>();
+    final ctrl = TextEditingController(text: pl.name);
+    final name = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surfaceElevated,
+        title: const Text('Renombrar playlist', style: TextStyle(color: Colors.white)),
+        content: TextField(
+          controller: ctrl,
+          autofocus: true,
+          style: const TextStyle(color: Colors.white),
+          onSubmitted: (v) => Navigator.pop(ctx, v),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+          FilledButton(
+              onPressed: () => Navigator.pop(ctx, ctrl.text),
+              child: const Text('Guardar')),
+        ],
+      ),
+    );
+    if (name == null || name.trim().isEmpty) return;
+    await app.playlistService.rename(pl.id, name.trim());
+    await app.refreshPlaylists();
+  }
+
+  Future<void> _songMenu(BuildContext context, String playlistId, String videoId) async {
+    final app = context.read<AppState>();
+    final action = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: AppColors.surfaceElevated,
+      builder: (ctx) => SafeArea(
+        child: ListTile(
+          leading: const Icon(Icons.remove_circle_outline, color: Colors.redAccent),
+          title: const Text('Quitar de la playlist',
+              style: TextStyle(color: Colors.white)),
+          onTap: () => Navigator.pop(ctx, 'remove'),
+        ),
+      ),
+    );
+    if (action == 'remove') {
+      await app.playlistService.removeSong(playlistId, videoId);
+      await app.refreshPlaylists();
+    }
+  }
+}
