@@ -10,6 +10,7 @@ import '../../state/app_state.dart';
 import '../../theme.dart';
 import '../widgets/add_to_playlist.dart';
 import '../widgets/artwork.dart';
+import '../widgets/song_row.dart';
 
 class SearchView extends StatefulWidget {
   const SearchView({super.key});
@@ -21,6 +22,7 @@ class SearchView extends StatefulWidget {
 class _SearchViewState extends State<SearchView> {
   final _controller = TextEditingController();
   List<YoutubeResult> _results = [];
+  String _searchedQuery = ''; // consulta cuyos _results remotos están vigentes
   bool _loading = false;
   String? _error;
 
@@ -31,6 +33,7 @@ class _SearchViewState extends State<SearchView> {
     final app = context.read<AppState>();
     _controller.text = app.searchQuery;
     _results = app.searchResults;
+    _searchedQuery = app.searchQuery;
   }
 
   Future<void> _search() async {
@@ -47,6 +50,7 @@ class _SearchViewState extends State<SearchView> {
       context.read<AppState>().setSearch(q, res);
       setState(() {
         _results = res;
+        _searchedQuery = q;
         _loading = false;
       });
     } catch (e) {
@@ -77,6 +81,7 @@ class _SearchViewState extends State<SearchView> {
                   controller: _controller,
                   autofocus: true,
                   style: const TextStyle(color: Colors.white),
+                  onChanged: (_) => setState(() {}), // filtra descargas en vivo
                   onSubmitted: (_) => _search(),
                   decoration: InputDecoration(
                     hintText: '¿Qué quieres escuchar?',
@@ -110,16 +115,62 @@ class _SearchViewState extends State<SearchView> {
             style: const TextStyle(color: AppColors.onSurfaceVariant)),
       );
     }
-    if (_results.isEmpty) {
-      return const Center(
-        child: Text('Busca una canción para reproducir o descargar',
-            style: TextStyle(color: AppColors.onSurfaceVariant)),
+
+    final q = _controller.text.trim();
+
+    // Resultados remotos vigentes (ya se pulsó "Buscar" para esta consulta).
+    if (q.isNotEmpty && q == _searchedQuery && _results.isNotEmpty) {
+      return ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        itemCount: _results.length,
+        itemBuilder: (_, i) => _ResultRow(result: _results[i]),
       );
     }
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      itemCount: _results.length,
-      itemBuilder: (_, i) => _ResultRow(result: _results[i]),
+
+    // Mientras se escribe: filtrar las descargas locales.
+    if (q.isNotEmpty) {
+      final app = context.watch<AppState>();
+      final player = context.read<PlayerService>();
+      final ql = q.toLowerCase();
+      final local = app.downloadedSongs
+          .where((s) =>
+              s.title.toLowerCase().contains(ql) ||
+              s.author.toLowerCase().contains(ql))
+          .toList();
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(28, 0, 28, 8),
+            child: Text(
+              local.isEmpty
+                  ? 'Sin coincidencias en tus descargas. Pulsa "Buscar" para buscar en YouTube.'
+                  : 'En tus descargas · pulsa "Buscar" para buscar en YouTube',
+              style: const TextStyle(
+                  color: AppColors.onSurfaceVariant, fontSize: 12),
+            ),
+          ),
+          Expanded(
+            child: local.isEmpty
+                ? const SizedBox()
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: local.length,
+                    itemBuilder: (_, i) => SongRow(
+                      song: local[i],
+                      index: i,
+                      onPlay: () => player.playSongs(local, startIndex: i),
+                    ),
+                  ),
+          ),
+        ],
+      );
+    }
+
+    return const Center(
+      child: Text(
+          'Escribe para filtrar tus descargas, o pulsa "Buscar" para YouTube',
+          style: TextStyle(color: AppColors.onSurfaceVariant)),
     );
   }
 }

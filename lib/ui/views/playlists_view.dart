@@ -97,7 +97,7 @@ class _PlaylistCardState extends State<_PlaylistCard> {
   Widget build(BuildContext context) {
     final app = context.read<AppState>();
     final pl = widget.playlist;
-    final count = pl.songIds.length;
+    final count = app.resolvedCountOf(pl.id);
     final icon = pl.id == Playlist.favoritesId
         ? Icons.favorite
         : pl.id == Playlist.generalId

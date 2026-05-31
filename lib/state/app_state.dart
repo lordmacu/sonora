@@ -153,6 +153,10 @@ class AppState extends ChangeNotifier {
     return songs.isEmpty ? null : songs.first;
   }
 
+  /// Conteo de canciones REALMENTE mostrables (descargadas o con metadatos),
+  /// no los videoIds crudos: evita contar ids huérfanos que ya no se ven.
+  int resolvedCountOf(String playlistId) => songsOfPlaylist(playlistId).length;
+
   Playlist? playlistById(String id) {
     for (final p in _playlists) {
       if (p.id == id) return p;
