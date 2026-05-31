@@ -4,57 +4,57 @@
 
 # Sonora
 
-**Reproductor de música de escritorio** — busca, escucha y descarga desde YouTube Music,
-e importa tus playlists de Spotify sin login ni API.
+**A desktop music player** — search, listen and download from YouTube Music,
+and import your Spotify playlists with no login and no API.
 
 [![Release](https://img.shields.io/github/v/release/lordmacu/sonora)](https://github.com/lordmacu/sonora/releases/latest)
 [![Flutter](https://img.shields.io/badge/Flutter-Desktop-02569B?logo=flutter)](https://flutter.dev)
 ![Platforms](https://img.shields.io/badge/macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-grey)
 
-[⬇️ Descargas](#-descargas) · [✨ Features](#-features) · [🚀 Cómo empezar](#-cómo-empezar)
+[⬇️ Downloads](#-downloads) · [✨ Features](#-features) · [🚀 Getting started](#-getting-started)
 
 </div>
 
 ---
 
 <div align="center">
-  <img src="home.png" alt="Sonora — pantalla principal" width="900" />
+  <img src="home.png" alt="Sonora — home screen" width="900" />
 </div>
 
 ---
 
-## ⬇️ Descargas
+## ⬇️ Downloads
 
-Descarga la última versión para tu sistema operativo:
+Grab the latest version for your operating system:
 
-| Sistema | Archivo | Descarga |
+| OS | File | Download |
 |--------|---------|----------|
-| 🍎 **macOS** | `Sonora-macos.dmg` | [Descargar](https://github.com/lordmacu/sonora/releases/latest/download/Sonora-macos.dmg) |
-| 🪟 **Windows** | `Sonora-windows-setup.exe` | [Descargar](https://github.com/lordmacu/sonora/releases/latest/download/Sonora-windows-setup.exe) |
-| 🐧 **Linux** | `Sonora-linux-x86_64.AppImage` | [Descargar](https://github.com/lordmacu/sonora/releases/latest/download/Sonora-linux-x86_64.AppImage) |
+| 🍎 **macOS** | `Sonora-macos.dmg` | [Download](https://github.com/lordmacu/sonora/releases/latest/download/Sonora-macos.dmg) |
+| 🪟 **Windows** | `Sonora-windows-setup.exe` | [Download](https://github.com/lordmacu/sonora/releases/latest/download/Sonora-windows-setup.exe) |
+| 🐧 **Linux** | `Sonora-linux-x86_64.AppImage` | [Download](https://github.com/lordmacu/sonora/releases/latest/download/Sonora-linux-x86_64.AppImage) |
 
-> 📦 ¿Buscas una versión específica? Mira todas las [releases](https://github.com/lordmacu/sonora/releases).
+> 📦 Looking for a specific version? Check all the [releases](https://github.com/lordmacu/sonora/releases).
 
-> ⚠️ **Los binarios no están firmados** (aún no se paga la firma de Apple ni de Windows),
-> así que el sistema mostrará una advertencia la primera vez. Es normal — abajo está cómo abrirlos.
+> ⚠️ **The binaries are not signed** (Apple/Windows code signing isn't paid for yet),
+> so your system will show a warning the first time. That's expected — see below how to open them.
 
-### Cómo abrir cada plataforma
+### How to open on each platform
 
 <details>
 <summary>🍎 <b>macOS</b></summary>
 
-1. Abre el `.dmg` y arrastra **Sonora** a la carpeta **Aplicaciones**.
-2. Si dice *"no se puede abrir porque procede de un desarrollador no identificado"*:
-   - Clic derecho sobre la app → **Abrir** → **Abrir**, **o**
-   - En Terminal: `xattr -dr com.apple.quarantine /Applications/sonora.app`
+1. Open the `.dmg` and drag **Sonora** into the **Applications** folder.
+2. If it says *"cannot be opened because it is from an unidentified developer"*:
+   - Right-click the app → **Open** → **Open**, **or**
+   - In Terminal: `xattr -dr com.apple.quarantine /Applications/sonora.app`
 
 </details>
 
 <details>
 <summary>🪟 <b>Windows</b></summary>
 
-- Si aparece *"Windows protegió tu PC"* (SmartScreen):
-  **Más información** → **Ejecutar de todas formas**.
+- If *"Windows protected your PC"* (SmartScreen) appears:
+  **More info** → **Run anyway**.
 
 </details>
 
@@ -65,7 +65,7 @@ Descarga la última versión para tu sistema operativo:
 chmod +x Sonora-linux-x86_64.AppImage
 ./Sonora-linux-x86_64.AppImage
 ```
-Funciona en la mayoría de distros sin instalar nada.
+Works on most distros without installing anything.
 
 </details>
 
@@ -73,84 +73,84 @@ Funciona en la mayoría de distros sin instalar nada.
 
 ## ✨ Features
 
-### 🎵 Reproducción
-- Reproductor de escritorio basado en **media_kit / libmpv** (audio nativo y estable).
-- Reproduce **archivos locales**, **streaming de YouTube** y colas tipo **radio**.
-- **Cola inteligente**: shuffle, anterior/siguiente y modo radio que se autoextiende con relacionados.
-- **Reanudación**: recuerda la posición de reproducción y recupera la sesión tras un cierre.
-- **Reproductor expandido** a pantalla completa con carátula grande.
-- **Barra "Now Playing"** siempre visible con controles rápidos.
+### 🎵 Playback
+- Desktop player powered by **media_kit / libmpv** (native, rock-solid audio).
+- Plays **local files**, **YouTube streaming** and **radio**-style queues.
+- **Smart queue**: shuffle, previous/next and a radio mode that auto-extends with related tracks.
+- **Resume**: remembers playback position and recovers your session after a crash or restart.
+- **Expanded full-screen player** with large artwork.
+- Always-visible **"Now Playing"** bar with quick controls.
 
-### 🔎 Búsqueda y descarga
-- **Búsqueda en YouTube Music** (InnerTube WEB_REMIX) con fallback automático.
-- **Descarga de audio** con barra de progreso y **cola con concurrencia limitada**.
-- **Caché automática a disco**: las canciones de streaming se guardan al escucharlas para uso offline.
-- **Radio / relacionados** desde una sola canción, sin necesidad de IA.
+### 🔎 Search & download
+- **YouTube Music search** (InnerTube WEB_REMIX) with automatic fallback.
+- **Audio downloads** with a progress bar and a **concurrency-limited queue**.
+- **Automatic disk caching**: streamed songs are saved as you listen for offline use.
+- **Radio / related** tracks from a single song, no AI required.
 
-### 📥 Importar tu biblioteca
-- **Importar desde Spotify sin API ni login** — lee el JSON público de la página `embed`.
-  Funciona incluso con playlists editoriales/algorítmicas (`37i9…`) que la API oficial bloquea.
-- **Importar desde CSV** (formato Exportify / TuneMyMusic).
-- Selecciona qué canciones importar y elige **"Agregar a lista"** (resuelve en YouTube sin descargar)
-  o **"Descargar"** para tenerlas offline.
-- Si ya existe una playlist con el mismo nombre, **reutiliza la existente** en vez de duplicarla.
+### 📥 Import your library
+- **Import from Spotify with no API and no login** — reads the public JSON from the `embed` page.
+  Works even with editorial/algorithmic playlists (`37i9…`) that the official API blocks.
+- **Import from CSV** (Exportify / TuneMyMusic format).
+- Pick which songs to import and choose **"Add to playlist"** (resolves on YouTube without downloading)
+  or **"Download"** to keep them offline.
+- If a playlist with the same name already exists, it **reuses the existing one** instead of duplicating it.
 
-### 📁 Playlists y biblioteca
-- Crea, gestiona y **elimina playlists** (con confirmación; las protegidas quedan excluidas).
-- **Covers en mosaico** estilo Spotify (1/2/3/4+ imágenes según las canciones).
-- **Favoritos**, **escuchado recientemente** y vista de **descargas**.
-- Agregar canciones a cualquier playlist desde la búsqueda o la biblioteca.
+### 📁 Playlists & library
+- Create, manage and **delete playlists** (with confirmation; protected ones are excluded).
+- **Mosaic covers** Spotify-style (1/2/3/4+ images based on the songs).
+- **Favorites**, **recently played** and a dedicated **downloads** view.
+- Add songs to any playlist from search or your library.
 
-### ⚙️ Ajustes
-- Elige una **carpeta de música local** y escanea tus archivos de audio.
-- Reproduce una carpeta completa de un clic.
-- Resumen de canciones descargadas.
+### ⚙️ Settings
+- Pick a **local music folder** and scan your audio files.
+- Play a whole folder with one click.
+- Summary of downloaded songs.
 
-### 🖥️ Escritorio
-- App multiplataforma: **macOS · Windows · Linux**.
-- Gestión de ventana nativa (tamaño, controles) con `window_manager`.
-- Interfaz oscura inspirada en reproductores modernos.
+### 🖥️ Desktop
+- Cross-platform app: **macOS · Windows · Linux**.
+- Native window management (size, controls) via `window_manager`.
+- Dark interface inspired by modern music players.
 
 ---
 
-## 🚀 Cómo empezar
+## 🚀 Getting started
 
-¿Solo quieres usar Sonora? Ve a [Descargas](#-descargas). Para compilar desde el código:
+Just want to use Sonora? Head to [Downloads](#-downloads). To build from source:
 
-### Requisitos
-- [Flutter](https://docs.flutter.dev/get-started/install) (SDK Dart `^3.10.1`), con soporte de escritorio habilitado.
-- Dependencias nativas de `media_kit` según tu sistema (libmpv en Linux).
+### Requirements
+- [Flutter](https://docs.flutter.dev/get-started/install) (Dart SDK `^3.10.1`), with desktop support enabled.
+- `media_kit` native dependencies for your OS (libmpv on Linux).
 
-### Compilar y ejecutar
+### Build & run
 ```bash
 git clone https://github.com/lordmacu/sonora.git
 cd sonora
 flutter pub get
 
-# Ejecutar en desarrollo
-flutter run -d macos      # o: windows / linux
+# Run in development
+flutter run -d macos      # or: windows / linux
 
-# Compilar release
-flutter build macos       # o: windows / linux
+# Build a release
+flutter build macos       # or: windows / linux
 ```
 
 ---
 
 ## 🛠️ Stack
 
-| Área | Tecnología |
+| Area | Technology |
 |------|-----------|
 | UI | Flutter (Material) · `provider` |
 | Audio | `media_kit` + `media_kit_libs_audio` (libmpv) |
 | YouTube | `youtube_explode_dart` + InnerTube |
-| Red | `http` |
-| Almacenamiento | `shared_preferences` · `path_provider` |
-| Ventana | `window_manager` |
-| Imágenes | `cached_network_image` |
+| Networking | `http` |
+| Storage | `shared_preferences` · `path_provider` |
+| Window | `window_manager` |
+| Images | `cached_network_image` |
 
 ---
 
-## 📄 Licencia
+## 📄 License
 
-Proyecto personal. Úsalo bajo tu propia responsabilidad — Sonora no aloja ni distribuye
-contenido; solo reproduce y organiza lo que el usuario decide buscar e importar.
+Personal project. Use it at your own risk — Sonora does not host or distribute any
+content; it only plays and organizes what the user chooses to search and import.
