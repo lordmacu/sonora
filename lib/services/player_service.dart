@@ -55,6 +55,15 @@ class PlayerService extends ChangeNotifier {
     _player.stream.log.listen((e) {
       debugPrint('media_kit log: ${e.level} ${e.prefix}: ${e.text}');
     });
+    // Dispositivos de salida (incluye Bluetooth ya emparejado en el SO).
+    _player.stream.audioDevices.listen((v) {
+      _audioDevices = v;
+      notifyListeners();
+    });
+    _player.stream.audioDevice.listen((v) {
+      _audioDevice = v;
+      notifyListeners();
+    });
   }
 
   final YoutubeService _youtube;
@@ -92,6 +101,10 @@ class PlayerService extends ChangeNotifier {
   Timer? _saveTimer;
   int _lastSavedPosSec = -1;
 
+  // Salida de audio (Bluetooth/altavoces/etc.). 'auto' = salida del sistema.
+  List<AudioDevice> _audioDevices = const [AudioDevice('auto', '')];
+  AudioDevice _audioDevice = const AudioDevice('auto', '');
+
   final List<Song> _queue = [];
   List<int> _order = []; // índices en orden de reproducción (afectado por shuffle)
   int _orderPos = -1;
@@ -116,6 +129,12 @@ class PlayerService extends ChangeNotifier {
   Duration get position => _position;
   Duration get duration => _duration;
   bool get hasSong => _orderPos >= 0 && _orderPos < _order.length;
+
+  /// Dispositivos de salida disponibles y el actualmente seleccionado.
+  List<AudioDevice> get audioDevices => _audioDevices;
+  AudioDevice get audioDevice => _audioDevice;
+  Future<void> setAudioDevice(AudioDevice device) =>
+      _player.setAudioDevice(device);
 
   Song? get current {
     if (!hasSong) return null;

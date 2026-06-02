@@ -94,6 +94,8 @@
   "radio": "Radio",
   "addToList": "Agregar a lista",
 
+  "audioOutput": "Salida de audio",
+  "autoOutput": "Automático (salida del sistema)",
   "downloaded": "Descargada",
   "downloading": "Descargando…",
   "addedTo": "Añadida a {name}",

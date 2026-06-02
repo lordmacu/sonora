@@ -285,6 +285,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get addToList => 'Agregar a lista';
 
   @override
+  String get audioOutput => 'Salida de audio';
+
+  @override
+  String get autoOutput => 'Automático (salida del sistema)';
+
+  @override
   String get downloaded => 'Descargada';
 
   @override

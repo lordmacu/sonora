@@ -596,6 +596,18 @@ abstract class AppLocalizations {
   /// **'Add to list'**
   String get addToList;
 
+  /// No description provided for @audioOutput.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio output'**
+  String get audioOutput;
+
+  /// No description provided for @autoOutput.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic (system output)'**
+  String get autoOutput;
+
   /// No description provided for @downloaded.
   ///
   /// In en, this message translates to:

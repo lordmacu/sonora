@@ -284,6 +284,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addToList => 'Add to list';
 
   @override
+  String get audioOutput => 'Audio output';
+
+  @override
+  String get autoOutput => 'Automatic (system output)';
+
+  @override
   String get downloaded => 'Downloaded';
 
   @override

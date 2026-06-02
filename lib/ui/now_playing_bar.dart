@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart' show AudioDevice;
 import 'package:provider/provider.dart';
 
 import '../l10n/app_localizations.dart';
@@ -144,6 +145,7 @@ class NowPlayingBar extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 if (song != null) SongDownloadButton(song: song),
+                _OutputDeviceButton(player: player),
                 IconButton(
                   icon: const Icon(Icons.playlist_add, size: 20),
                   color: AppColors.onSurfaceVariant,
@@ -196,6 +198,47 @@ class _ProgressBar extends StatelessWidget {
         ),
         Text(formatDurationD(dur),
             style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 11)),
+      ],
+    );
+  }
+}
+
+/// Selector de salida de audio (Bluetooth, altavoces, etc.). El dispositivo BT
+/// debe estar emparejado en el SO; aquí solo se elige a cuál enviar el sonido.
+class _OutputDeviceButton extends StatelessWidget {
+  const _OutputDeviceButton({required this.player});
+  final PlayerService player;
+
+  String _label(BuildContext context, AudioDevice d) =>
+      d.name == 'auto' || d.name.isEmpty
+          ? AppLocalizations.of(context).autoOutput
+          : (d.description.isNotEmpty ? d.description : d.name);
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final devices = player.audioDevices;
+    final current = player.audioDevice;
+    return PopupMenuButton<AudioDevice>(
+      icon: const Icon(Icons.speaker, size: 20, color: AppColors.onSurfaceVariant),
+      color: AppColors.surfaceElevated,
+      tooltip: l10n.audioOutput,
+      onSelected: player.setAudioDevice,
+      itemBuilder: (_) => [
+        for (final d in devices)
+          PopupMenuItem(
+            value: d,
+            child: ListTile(
+              dense: true,
+              leading: Icon(
+                d == current ? Icons.check : Icons.volume_up,
+                color: d == current ? AppColors.primary : AppColors.onSurfaceVariant,
+              ),
+              title: Text(_label(context, d),
+                  style: TextStyle(
+                      color: d == current ? AppColors.primary : Colors.white)),
+            ),
+          ),
       ],
     );
   }
