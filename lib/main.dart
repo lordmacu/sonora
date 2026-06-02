@@ -10,6 +10,7 @@ import 'package:window_manager/window_manager.dart';
 import 'l10n/app_localizations.dart';
 import 'services/download_manager.dart';
 import 'services/library_service.dart';
+import 'services/media_keys.dart';
 import 'services/playlist_service.dart';
 import 'services/player_service.dart';
 import 'services/youtube_service.dart';
@@ -42,6 +43,8 @@ Future<void> main() async {
   final youtube = YoutubeService(library);
   final downloads = DownloadManager(youtube);
   final player = PlayerService(youtube, downloads: downloads, prefs: prefs);
+  // Teclas multimedia del SO + panel "Now Playing" (macOS).
+  MediaKeys(player).attach();
   final appState = AppState(
     library: library,
     playlistService: playlistService,
